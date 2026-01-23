@@ -1,15 +1,18 @@
+import { Review } from '../../review/entities/review.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Store } from '../../store/entities/store.entity';
 import { Category } from '../../category/entities/category.entity';
 import { Color } from '../../color/entities/color.entity';
+import { Store } from '../../store/entities/store.entity';
+import { User } from '../../user/entities/user.entity';
 
 @Entity('products')
 export class Product {
@@ -50,6 +53,16 @@ export class Product {
 
   @Column()
   color_id: number;
+
+  @ManyToOne(() => User, (user) => user.favorites)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
+
+  @Column()
+  user_id: number;
+
+  @OneToMany(() => Review, (review) => review.product)
+  reviews: Review[];
 
   @CreateDateColumn()
   createdAt: Date;

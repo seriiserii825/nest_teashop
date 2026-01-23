@@ -12,6 +12,7 @@ import { Product } from '../../product/entities/product.entity';
 import { User } from '../../user/entities/user.entity';
 import { Category } from '../../category/entities/category.entity';
 import { Color } from '../../color/entities/color.entity';
+import { Review } from '../../review/entities/review.entity';
 
 @Entity('stores')
 export class Store {
@@ -39,6 +40,9 @@ export class Store {
 
   @OneToMany(() => Color, (color) => color.store)
   colors: Color[];
+
+  @OneToMany(() => Review, (review) => review.store)
+  reviews: Review[];
 
   @CreateDateColumn()
   createdAt: Date;

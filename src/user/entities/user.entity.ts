@@ -1,3 +1,5 @@
+import { Product } from '../../product/entities/product.entity';
+import { Review } from '../../review/entities/review.entity';
 import { Store } from '../../store/entities/store.entity';
 import {
   Column,
@@ -27,6 +29,12 @@ export class User {
 
   @OneToMany(() => Store, (store) => store.user)
   stores: Store[];
+
+  @OneToMany(() => Review, (review) => review.user)
+  reviews: Review[];
+
+  @OneToMany(() => Product, (product) => product.user)
+  favorites: Product[];
 
   @CreateDateColumn()
   createdAt: Date;
