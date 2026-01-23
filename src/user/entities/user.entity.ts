@@ -1,6 +1,3 @@
-import { Product } from '../../product/entities/product.entity';
-import { Review } from '../../review/entities/review.entity';
-import { Store } from '../../store/entities/store.entity';
 import {
   Column,
   CreateDateColumn,
@@ -9,6 +6,10 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Order } from '../../order/entities/order.entity';
+import { Product } from '../../product/entities/product.entity';
+import { Review } from '../../review/entities/review.entity';
+import { Store } from '../../store/entities/store.entity';
 
 @Entity('users')
 export class User {
@@ -35,6 +36,9 @@ export class User {
 
   @OneToMany(() => Product, (product) => product.user)
   favorites: Product[];
+
+  @OneToMany(() => Order, (order) => order.user)
+  orders: Order[];
 
   @CreateDateColumn()
   createdAt: Date;
