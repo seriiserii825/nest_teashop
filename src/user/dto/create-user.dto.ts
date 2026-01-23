@@ -1,13 +1,19 @@
-import { PickType } from '@nestjs/mapped-types';
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsEmail, IsNumber } from 'class-validator';
+import { ApiProperty, PickType } from '@nestjs/swagger';
+import {
+  IsEmail,
+  IsNumber,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
 
 export class UserDto {
   @ApiProperty({ example: 1 })
   @IsNumber()
   id: number;
 
-  @ApiProperty({ example: 'John Doe' })
+  @ApiProperty({ example: 'John Doe', required: false })
+  @IsOptional()
   @IsString()
   name: string;
 
@@ -15,7 +21,8 @@ export class UserDto {
   @IsEmail()
   email: string;
 
-  @ApiProperty({ example: 'strongpassword123' })
+  @ApiProperty({ example: 'strongpassword123', minimum: 6 })
+  @MinLength(6)
   @IsString()
   password: string;
 
@@ -36,4 +43,13 @@ export class CreateUserDto extends PickType(UserDto, [
   'name',
   'email',
   'password',
+]) {}
+
+export class UserResponseDto extends PickType(UserDto, [
+  'id',
+  'name',
+  'email',
+  'picture',
+  'createdAt',
+  'updatedAt',
 ]) {}
