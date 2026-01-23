@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { Product } from '../../product/entities/product.entity';
 import { User } from '../../user/entities/user.entity';
+import { Category } from '../../category/entities/category.entity';
 
 @Entity('stores')
 export class Store {
@@ -31,6 +32,9 @@ export class Store {
 
   @OneToMany(() => Product, (product) => product.store)
   products: Product[];
+
+  @OneToMany(() => Category, (category) => category.store)
+  categories: Category[];
 
   @CreateDateColumn()
   createdAt: Date;
