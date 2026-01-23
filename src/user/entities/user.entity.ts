@@ -1,4 +1,4 @@
-import { Store } from 'src/store/entities/store.entity';
+import { Store } from '../../store/entities/store.entity';
 import {
   Column,
   CreateDateColumn,
