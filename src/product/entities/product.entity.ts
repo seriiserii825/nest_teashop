@@ -21,7 +21,7 @@ export class Product {
   price: number;
 
   @Column()
-  images: string[];
+  images: string;
 
   @CreateDateColumn()
   createdAt: Date;
