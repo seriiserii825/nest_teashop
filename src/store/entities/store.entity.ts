@@ -15,7 +15,7 @@ export class Store {
   title: string;
 
   @Column({ nullable: true })
-  string: string;
+  description: string;
 
   @CreateDateColumn()
   createdAt: Date;
