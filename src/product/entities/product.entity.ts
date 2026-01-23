@@ -2,9 +2,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Store } from '../../store/entities/store.entity';
 
 @Entity('products')
 export class Product {
@@ -22,6 +25,10 @@ export class Product {
 
   @Column()
   images: string;
+
+  @ManyToOne(() => Store, (store) => store.id, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'store_id' })
+  store: Store;
 
   @CreateDateColumn()
   createdAt: Date;

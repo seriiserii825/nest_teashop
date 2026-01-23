@@ -1,13 +1,15 @@
-import { User } from '../../user/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Product } from '../../product/entities/product.entity';
+import { User } from '../../user/entities/user.entity';
 
 @Entity('stores')
 export class Store {
@@ -26,6 +28,9 @@ export class Store {
 
   @Column()
   user_id: number;
+
+  @OneToMany(() => Product, (product) => product.store)
+  products: Product[];
 
   @CreateDateColumn()
   createdAt: Date;
