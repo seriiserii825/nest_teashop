@@ -3,7 +3,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 export default function swaggerConfig(app: INestApplication) {
   const config = new DocumentBuilder()
-    .setTitle('Budget api')
+    .setTitle('Teashop api')
     .setVersion('1.0')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
