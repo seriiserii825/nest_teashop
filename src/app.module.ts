@@ -10,6 +10,7 @@ import { ColorModule } from './color/color.module';
 import { ReviewModule } from './review/review.module';
 import { OrderModule } from './order/order.module';
 import { OrderItemModule } from './order-item/order-item.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { OrderItemModule } from './order-item/order-item.module';
     ReviewModule,
     OrderModule,
     OrderItemModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
