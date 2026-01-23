@@ -1,4 +1,3 @@
-import { Review } from '../../review/entities/review.entity';
 import {
   Column,
   CreateDateColumn,
@@ -11,6 +10,8 @@ import {
 } from 'typeorm';
 import { Category } from '../../category/entities/category.entity';
 import { Color } from '../../color/entities/color.entity';
+import { OrderItem } from '../../order-item/entities/order-item.entity';
+import { Review } from '../../review/entities/review.entity';
 import { Store } from '../../store/entities/store.entity';
 import { User } from '../../user/entities/user.entity';
 
@@ -63,6 +64,9 @@ export class Product {
 
   @OneToMany(() => Review, (review) => review.product)
   reviews: Review[];
+
+  @OneToMany(() => OrderItem, (orderItem) => orderItem.product)
+  order_items: OrderItem[];
 
   @CreateDateColumn()
   createdAt: Date;
