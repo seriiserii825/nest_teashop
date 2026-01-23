@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Store } from '../../store/entities/store.entity';
 import { Category } from '../../category/entities/category.entity';
+import { Color } from '../../color/entities/color.entity';
 
 @Entity('products')
 export class Product {
@@ -42,6 +43,13 @@ export class Product {
 
   @Column()
   category_id: number;
+
+  @ManyToOne(() => Color, (color) => color.id, { onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'color_id' })
+  color: Color;
+
+  @Column()
+  color_id: number;
 
   @CreateDateColumn()
   createdAt: Date;
