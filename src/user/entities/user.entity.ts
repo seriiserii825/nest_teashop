@@ -1,7 +1,9 @@
+import { Store } from 'src/store/entities/store.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -22,6 +24,9 @@ export class User {
 
   @Column({ default: '/uploads/no-user-image.png' })
   picture: string;
+
+  @OneToMany(() => Store, (store) => store.user)
+  stores: Store[];
 
   @CreateDateColumn()
   createdAt: Date;
