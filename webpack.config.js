@@ -10,19 +10,7 @@ module.exports = function (options) {
           loader: 'ts-loader',
           options: {
             transpileOnly: false,
-            getCustomTransformers: (program) => {
-              const nestiaCore = require('@nestia/core/lib/transform');
-              const nestiaSdk = require('@nestia/sdk/lib/transform');
-              const typia = require('typia/lib/transform');
-
-              return {
-                before: [
-                  nestiaCore.default(program, { validate: 'validate', stringify: 'assert' }),
-                  nestiaSdk.default(program),
-                  typia.default(program, {}),
-                ],
-              };
-            },
+            compiler: 'ts-patch/compiler',
           },
           exclude: /node_modules/,
         },
