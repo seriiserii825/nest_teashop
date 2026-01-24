@@ -12,6 +12,9 @@ export default function swaggerConfig(app: INestApplication) {
       docExpansion: 'none', // This collapses all by default
       tagsSorter: 'alpha',
       operationsSorter: 'alpha',
+      supportedSubmitMethods: [],
+      filter: true, // Включить поиск
+      showRequestHeaders: false, // Скрыть заголовки запросов
     },
   });
 }
