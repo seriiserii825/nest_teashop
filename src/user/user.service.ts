@@ -6,7 +6,11 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { hash } from 'argon2';
 import { Repository } from 'typeorm';
-import { TCreateUserDto, TUserResponseDto } from './dto/user.dto';
+import {
+  IUserFavorite,
+  TCreateUserDto,
+  TUserResponseDto,
+} from './dto/user.dto';
 import { User } from './entities/user.entity';
 import { transformUserToDto } from 'src/utils/transform-user';
 
@@ -82,5 +86,46 @@ export class UserService {
     if (user) {
       throw new ConflictException('User with this email already exists');
     }
+  }
+
+  async toggleFavorite(
+    productId: number,
+    userId: number,
+  ): Promise<IUserFavorite> {
+    const user = await this.findOne(userId);
+
+    //TODO: implement after add Product entity
+    // // Проверяем существование продукта
+    // const product = await this.productRepository.findOne({
+    //   where: { id: productId },
+    // });
+    //
+    // if (!product) {
+    //   throw new NotFoundException('Product not found');
+    // }
+    //
+    // // // Проверяем, есть ли продукт в избранном
+    // const productIndex = user.favorites.findIndex((p) => p.id === productId);
+    //
+    // if (productIndex !== -1) {
+    //   // Убираем из избранного
+    //   user.favorites.splice(productIndex, 1);
+    // } else {
+    //   // Добавляем в избранное
+    //   user.favorites.push(product);
+    // }
+    //
+    // // Сохраняем изменения
+    // await this.userRepository.save(user);
+
+    // return {
+    //   message:
+    //     productIndex !== -1 ? 'Removed from favorites' : 'Added to favorites',
+    //   isFavorite: productIndex === -1,
+    // };
+    return {
+      message: 'Removed from favorites',
+      isFavorite: true,
+    };
   }
 }

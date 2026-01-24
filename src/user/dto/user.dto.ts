@@ -13,3 +13,8 @@ interface IUserDto {
 export type TCreateUserDto = Pick<IUserDto, 'name' | 'email' | 'password'>;
 
 export type TUserResponseDto = Omit<IUserDto, 'password'>;
+
+export interface IUserFavorite {
+  message: string;
+  isFavorite: boolean;
+}

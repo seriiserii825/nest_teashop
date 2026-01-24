@@ -1,6 +1,9 @@
+import { TypedParam, TypedRoute } from '@nestia/core';
 import { Controller, Delete, Get, Param } from '@nestjs/common';
-import { UserService } from './user.service';
 import { AuthJwt } from 'src/auth/decorators/auth.jwt.decorator';
+import { tags } from 'typia';
+import { CurrentUser } from './decorators/user.decorator';
+import { UserService } from './user.service';
 
 @AuthJwt()
 @Controller('users')
@@ -25,5 +28,13 @@ export class UserController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.userService.remove(+id);
+  }
+
+  @TypedRoute.Patch('favorites/:productId')
+  async toggleFavorite(
+    @CurrentUser('id') userId: number,
+    @TypedParam('productId') productId: number & tags.Type<'uint32'>,
+  ) {
+    return this.userService.toggleFavorite(productId, userId);
   }
 }
