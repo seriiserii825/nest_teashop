@@ -22,7 +22,10 @@ export class AuthService {
     return { user, tokens };
   }
 
-  register() {}
+  async register(dto: TCreateUserDto): Promise<TUserResponseDto> {
+    const user = await this.userService.create(dto);
+    return user;
+  }
 
   issueTokens(userId: number): ITokens {
     const data = { id: userId };

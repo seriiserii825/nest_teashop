@@ -15,7 +15,7 @@ export class AuthController {
 
   @TypedRoute.Post('register')
   create(@TypedBody() input: TCreateUserDto): Promise<TUserResponseDto> {
-    return this.userService.create(input);
+    return this.authService.register(input);
   }
 
   @TypedRoute.Post('login')
