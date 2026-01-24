@@ -4,6 +4,7 @@ import type { TCreateUserDto, TUserResponseDto } from 'src/user/dto/user.dto';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
 import { UpdateAuthDto } from './dto/update-auth.dto';
+import { ILoginResponse } from './interfaces/ILoginResponse';
 
 @Controller('auth')
 export class AuthController {
@@ -15,6 +16,11 @@ export class AuthController {
   @TypedRoute.Post('register')
   create(@TypedBody() input: TCreateUserDto): Promise<TUserResponseDto> {
     return this.userService.create(input);
+  }
+
+  @TypedRoute.Post('login')
+  login(@TypedBody() input: TCreateUserDto): Promise<ILoginResponse> {
+    return this.authService.login(input);
   }
 
   @Get()
