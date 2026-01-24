@@ -42,3 +42,8 @@ export class StoreResponseDto {
   @ApiProperty()
   updatedAt: Date;
 }
+
+export class StoreRemoveResponseDto {
+  @ApiProperty({ example: 'Store with id 4 removed successfully' })
+  message: string;
+}

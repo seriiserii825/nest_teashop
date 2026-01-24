@@ -4,10 +4,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { transformStoreToDto } from '../utils/transform-store';
 import {
   CreateStoreDto,
+  StoreRemoveResponseDto,
   StoreResponseDto,
   UpdateStoreDto,
 } from './dto/store.dto';
@@ -31,27 +32,18 @@ export class StoreService {
   findAll(user_id: number) {
     return this.storeRepository.find({
       where: { user_id },
-      order: { createdAt: 'DESC' },
+      order: { updatedAt: 'DESC' },
     });
   }
 
-  async findOne(id: number, user_id: number): Promise<StoreResponseDto> {
+  async findOne(id: number, user_id: number): Promise<Store> {
     const store = await this.storeRepository.findOne({
       where: { id, user_id },
     });
     if (!store) {
       throw new NotFoundException(`Store with ID ${id} not found`);
     }
-    return transformStoreToDto(store);
-  }
-
-  async checkStoreByTitle(title: string, user_id: number): Promise<void> {
-    const store = await this.storeRepository.findOne({
-      where: { title, user_id },
-    });
-    if (store) {
-      throw new NotFoundException(`Store with title ${title} already found`);
-    }
+    return store;
   }
 
   async update(id: number, updateStoreDto: UpdateStoreDto, user_id: number) {
@@ -62,7 +54,11 @@ export class StoreService {
 
     // Only check title if it's being updated
     if (updateStoreDto.title) {
-      await this.checkStoreByTitle(updateStoreDto.title, user_id);
+      await this.checkStoreByTitleForCurrentStore(
+        updateStoreDto.title,
+        user_id,
+        id,
+      );
     }
 
     const store = await this.findOne(id, user_id);
@@ -75,7 +71,31 @@ export class StoreService {
     return updatedStore;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} store`;
+  async remove(id: number, user_id: number): Promise<StoreRemoveResponseDto> {
+    const store = await this.findOne(id, user_id);
+    await this.storeRepository.remove(store);
+    return { message: `Store with id ${id} removed successfully` };
+  }
+
+  async checkStoreByTitle(title: string, user_id: number): Promise<void> {
+    const store = await this.storeRepository.findOne({
+      where: { title, user_id },
+    });
+    if (store) {
+      throw new NotFoundException(`Store with title ${title} already found`);
+    }
+  }
+
+  async checkStoreByTitleForCurrentStore(
+    title: string,
+    user_id: number,
+    store_id: number,
+  ): Promise<void> {
+    const store = await this.storeRepository.findOne({
+      where: { title, user_id, id: Not(store_id) },
+    });
+    if (store) {
+      throw new NotFoundException(`Store with title ${title} already found`);
+    }
   }
 }

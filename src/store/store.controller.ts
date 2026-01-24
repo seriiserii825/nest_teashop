@@ -1,9 +1,22 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { AuthJwt } from 'src/auth/decorators/auth.jwt.decorator';
 import { CurrentUser } from 'src/user/decorators/user.decorator';
 import { User } from 'src/user/entities/user.entity';
 import { transformStoreToDto } from 'src/utils/transform-store';
-import { CreateStoreDto, StoreResponseDto } from './dto/store.dto';
+import {
+  CreateStoreDto,
+  StoreRemoveResponseDto,
+  StoreResponseDto,
+  UpdateStoreDto,
+} from './dto/store.dto';
 import { StoreService } from './store.service';
 
 @AuthJwt()
@@ -29,8 +42,20 @@ export class StoreController {
     return this.storeService.findOne(+id, user.id);
   }
 
+  @Patch(':id')
+  update(
+    @CurrentUser() user: User,
+    @Param('id') id: string,
+    @Body() updateStoreDto: UpdateStoreDto,
+  ): Promise<StoreResponseDto> {
+    return this.storeService.update(+id, updateStoreDto, user.id);
+  }
+
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.storeService.remove(+id);
+  remove(
+    @CurrentUser() user: User,
+    @Param('id') id: string,
+  ): Promise<StoreRemoveResponseDto> {
+    return this.storeService.remove(+id, user.id);
   }
 }
