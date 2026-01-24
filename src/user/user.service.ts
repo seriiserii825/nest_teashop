@@ -5,11 +5,10 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { hash } from 'argon2';
+import { transformUserToDto } from 'src/utils/transform-user';
 import { Repository } from 'typeorm';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { TCreateUserDto, TUserResponseDto } from './dto/user.dto';
 import { User } from './entities/user.entity';
-import { transformUserToDto } from 'src/utils/transform-user';
 
 @Injectable()
 export class UserService {
@@ -54,10 +53,6 @@ export class UserService {
       throw new NotFoundException(`User with ID ${email} not found`);
     }
     return user;
-  }
-
-  update(id: number, _updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
   }
 
   remove(id: number) {
