@@ -53,7 +53,7 @@ export class AuthService {
     if (!user) throw new NotFoundException('User not found');
 
     const tokens = this.issueTokens(user.id);
-    return { user: transformUserToDto(user), tokens };
+    return { user: user, tokens };
   }
 
   addRefreshTokenToResponse(res: Response, refreshToken: string): void {

@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { hash } from 'argon2';
+import { transformUserToDto } from 'src/utils/transform-user';
 import { Repository } from 'typeorm';
 import {
   IUserFavorite,
@@ -12,7 +13,6 @@ import {
   TUserResponseDto,
 } from './dto/user.dto';
 import { User } from './entities/user.entity';
-import { transformUserToDto } from 'src/utils/transform-user';
 
 @Injectable()
 export class UserService {
@@ -48,7 +48,7 @@ export class UserService {
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<TUserResponseDto> {
     const user = await this.userRepository.findOne({
       where: { id },
       relations: ['stores', 'favorites', 'orders'],
@@ -56,7 +56,7 @@ export class UserService {
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
-    return user;
+    return transformUserToDto(user);
   }
 
   async findByEmail(email: string): Promise<User> {
@@ -89,7 +89,7 @@ export class UserService {
   }
 
   async toggleFavorite(
-    productId: number,
+    _productId: number,
     userId: number,
   ): Promise<IUserFavorite> {
     const user = await this.findOne(userId);
