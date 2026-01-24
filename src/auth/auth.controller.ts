@@ -10,9 +10,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiCreatedResponse } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
 import { TCreateUserDto, TUserResponseDto } from 'src/user/dto/user.dto';
 import { AuthService } from './auth.service';
+import { LoginResponseDto } from './dto/create-auth.dto';
 import { ILoginResponseWithoutRefresh } from './interfaces/ILoginResponse';
 
 @Controller('auth')
@@ -20,11 +22,19 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
+  @ApiCreatedResponse({
+    type: TUserResponseDto,
+    description: 'User successfully registered',
+  })
   create(@Body() input: TCreateUserDto): Promise<TUserResponseDto> {
     return this.authService.register(input);
   }
 
   @Post('login')
+  @ApiCreatedResponse({
+    type: LoginResponseDto,
+    description: 'User successfully logged in',
+  })
   async login(
     @Body() input: TCreateUserDto,
     @Res({ passthrough: true }) res: Response,
@@ -36,6 +46,10 @@ export class AuthController {
   }
 
   @Post('login/access-token')
+  @ApiCreatedResponse({
+    type: LoginResponseDto,
+    description: 'New access token generated successfully',
+  })
   async loginAccessToken(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
