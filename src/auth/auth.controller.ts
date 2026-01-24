@@ -1,6 +1,6 @@
 import { TypedBody, TypedRoute } from '@nestia/core';
 import { Body, Controller, Delete, Get, Param, Patch } from '@nestjs/common';
-import type { TCreateUserDto } from 'src/user/dto/user.dto';
+import type { TCreateUserDto, TUserResponseDto } from 'src/user/dto/user.dto';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
 import { UpdateAuthDto } from './dto/update-auth.dto';
@@ -13,7 +13,7 @@ export class AuthController {
   ) {}
 
   @TypedRoute.Post('register')
-  create(@TypedBody() input: TCreateUserDto) {
+  create(@TypedBody() input: TCreateUserDto): Promise<TUserResponseDto> {
     return this.userService.create(input);
   }
 

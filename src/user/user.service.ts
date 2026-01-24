@@ -7,15 +7,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { hash } from 'argon2';
 import { Repository } from 'typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { TCreateUserDto } from './dto/user.dto';
+import { TCreateUserDto, TUserResponseDto } from './dto/user.dto';
 import { User } from './entities/user.entity';
+import { transformUserToDto } from 'src/utils/transform-user';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
-  async create(input: TCreateUserDto) {
+  async create(input: TCreateUserDto): Promise<TUserResponseDto> {
     await this.userExists(input.email);
     const hashedPassword = await hash(input.password);
     const newUser = this.userRepository.create({
@@ -24,11 +25,13 @@ export class UserService {
     });
     await this.userRepository.save(newUser);
     delete (newUser as Partial<User>).password;
-    return newUser;
+    return transformUserToDto(newUser);
   }
 
   findAll() {
-    return `This action returns all user`;
+    return this.userRepository.find({
+      relations: ['stores', 'favorites', 'orders'],
+    });
   }
 
   async findOne(id: number) {
@@ -53,7 +56,7 @@ export class UserService {
     return user;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
+  update(id: number, _updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
   }
 
