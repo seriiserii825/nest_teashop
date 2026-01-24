@@ -1,14 +1,10 @@
 import { TypedBody, TypedParam, TypedRoute } from '@nestia/core';
-import { Body, Controller, Delete, Param, Patch } from '@nestjs/common';
+import { Controller, Delete, Param } from '@nestjs/common';
 import { AuthJwt } from 'src/auth/decorators/auth.jwt.decorator';
 import { CurrentUser } from 'src/user/decorators/user.decorator';
 import { User } from 'src/user/entities/user.entity';
 import { transformStoreToDto } from 'src/utils/transform-store';
-import type {
-  CreateStoreDto,
-  StoreResponseDto,
-  UpdateStoreDto,
-} from './dto/store.dto';
+import type { CreateStoreDto, StoreResponseDto } from './dto/store.dto';
 import { StoreService } from './store.service';
 
 @AuthJwt()
@@ -34,15 +30,15 @@ export class StoreController {
     return this.storeService.findOne(+id, user.id);
   }
 
-  @Patch(':id')
-  @TypedRoute.Patch(':id')
-  update(
-    @CurrentUser() user: User,
-    @TypedParam('id') id: number,
-    @TypedBody() updateStoreDto: UpdateStoreDto,
-  ) {
-    return this.storeService.update(id, updateStoreDto, user.id);
-  }
+  // @Patch(':id')
+  // @TypedRoute.Put(':id')
+  // update(
+  //   @CurrentUser() user: User,
+  //   @TypedParam('id') id: number,
+  //   @TypedBody() updateStoreDto: UpdateStoreDto,
+  // ) {
+  //   return this.storeService.update(id, updateStoreDto, user.id);
+  // }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
