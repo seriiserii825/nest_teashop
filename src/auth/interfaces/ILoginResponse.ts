@@ -9,3 +9,8 @@ export interface ILoginResponse {
   user: TUserResponseDto;
   tokens: ITokens;
 }
+
+export interface ILoginResponseWithoutRefresh {
+  user: TUserResponseDto;
+  tokens: { accessToken: string };
+}

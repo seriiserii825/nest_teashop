@@ -1,10 +1,10 @@
 import { TypedBody, TypedRoute } from '@nestia/core';
-import { Body, Controller, Delete, Get, Param, Patch } from '@nestjs/common';
+import { BadGatewayException, Controller, Req, Res } from '@nestjs/common';
+import type { Request, Response } from 'express';
 import type { TCreateUserDto, TUserResponseDto } from 'src/user/dto/user.dto';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
-import { UpdateAuthDto } from './dto/update-auth.dto';
-import { ILoginResponse } from './interfaces/ILoginResponse';
+import { ILoginResponseWithoutRefresh } from './interfaces/ILoginResponse';
 
 @Controller('auth')
 export class AuthController {
@@ -19,27 +19,29 @@ export class AuthController {
   }
 
   @TypedRoute.Post('login')
-  login(@TypedBody() input: TCreateUserDto): Promise<ILoginResponse> {
-    return this.authService.login(input);
+  async login(
+    @TypedBody() input: TCreateUserDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<ILoginResponseWithoutRefresh> {
+    const { tokens, ...user } = await this.authService.login(input);
+    this.authService.addRefreshTokenToResponse(res, tokens.refreshToken);
+
+    return { ...user, tokens: { accessToken: tokens.accessToken } };
   }
 
-  @Get()
-  findAll() {
-    return this.authService.findAll();
-  }
+  @TypedRoute.Post('login/access-token')
+  async loginAccessToken(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const refreshToken = req.cookies['refreshToken'] as string;
+    if (!refreshToken) {
+      throw new BadGatewayException('No refresh token provided');
+    }
+    const { tokens, ...user } =
+      await this.authService.getNewTokens(refreshToken);
+    this.authService.addRefreshTokenToResponse(res, tokens.refreshToken);
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-    return this.authService.update(+id, updateAuthDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.authService.remove(+id);
+    return { ...user, tokens: { accessToken: tokens.accessToken } };
   }
 }

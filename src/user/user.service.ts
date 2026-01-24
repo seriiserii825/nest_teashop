@@ -5,10 +5,10 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { hash } from 'argon2';
-import { transformUserToDto } from 'src/utils/transform-user';
 import { Repository } from 'typeorm';
 import { TCreateUserDto, TUserResponseDto } from './dto/user.dto';
 import { User } from './entities/user.entity';
+import { transformUserToDto } from 'src/utils/transform-user';
 
 @Injectable()
 export class UserService {
@@ -25,6 +25,17 @@ export class UserService {
     await this.userRepository.save(newUser);
     delete (newUser as Partial<User>).password;
     return transformUserToDto(newUser);
+  }
+
+  async createForGoogle(
+    input: Omit<TCreateUserDto, 'password'>,
+  ): Promise<User> {
+    await this.userExists(input.email);
+    const newUser = this.userRepository.create({
+      ...input,
+    });
+    await this.userRepository.save(newUser);
+    return newUser;
   }
 
   findAll() {
@@ -44,7 +55,7 @@ export class UserService {
     return user;
   }
 
-  async findByEmail(email: string) {
+  async findByEmail(email: string): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { email },
       relations: ['stores', 'favorites', 'orders'],
@@ -53,6 +64,13 @@ export class UserService {
       throw new NotFoundException(`User with email ${email} not found`);
     }
     return user;
+  }
+
+  async findByEmailOrNull(email: string): Promise<User | null> {
+    return this.userRepository.findOne({
+      where: { email },
+      relations: ['stores', 'favorites', 'orders'],
+    });
   }
 
   remove(id: number) {

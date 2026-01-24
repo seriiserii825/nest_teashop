@@ -1,6 +1,8 @@
 import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { UserService } from './user.service';
+import { AuthJwt } from 'src/auth/decorators/auth.jwt.decorator';
 
+// @AuthJwt()
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
