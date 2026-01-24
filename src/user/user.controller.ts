@@ -1,27 +1,10 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-} from '@nestjs/common';
-import { CreateUserDto, UserResponseDto } from './dto/create-user.dto';
+import { Body, Controller, Delete, Get, Param, Patch } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
-import { ApiBody, ApiResponse } from '@nestjs/swagger';
 
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
-
-  @ApiBody({ type: CreateUserDto })
-  @ApiResponse({ type: UserResponseDto })
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
-  }
 
   @Get()
   findAll() {
