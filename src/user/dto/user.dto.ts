@@ -1,20 +1,55 @@
-import { tags } from 'typia';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
 
-interface IUserDto {
-  id: number;
-  name?: undefined | (string & tags.MinLength<2>);
-  email: string & tags.Format<'email'>;
-  password: string & tags.MinLength<6>;
-  picture: string;
-  createdAt: string & tags.Format<'date-time'>;
-  updatedAt: string & tags.Format<'date-time'>;
+export class TCreateUserDto {
+  @ApiPropertyOptional({ minLength: 2 })
+  @IsOptional()
+  @IsString()
+  @MinLength(2)
+  name?: string;
+
+  @ApiProperty({ format: 'email' })
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @ApiProperty({ minLength: 6 })
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(6)
+  password: string;
 }
 
-export type TCreateUserDto = Pick<IUserDto, 'name' | 'email' | 'password'>;
+export class TUserResponseDto {
+  @ApiProperty()
+  id: number;
 
-export type TUserResponseDto = Omit<IUserDto, 'password'>;
+  @ApiPropertyOptional()
+  name?: string;
 
-export interface IUserFavorite {
+  @ApiProperty({ format: 'email' })
+  email: string;
+
+  @ApiProperty()
+  picture: string;
+
+  @ApiProperty()
+  createdAt: Date;
+
+  @ApiProperty()
+  updatedAt: Date;
+}
+
+export class IUserFavorite {
+  @ApiProperty()
   message: string;
+
+  @ApiProperty()
   isFavorite: boolean;
 }

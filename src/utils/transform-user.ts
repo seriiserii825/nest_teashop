@@ -9,7 +9,7 @@ export function transformUserToDto(user: User): TUserResponseDto {
     name: user.name,
     email: user.email,
     picture: user.picture,
-    createdAt: user.createdAt.toISOString(),
-    updatedAt: user.updatedAt.toISOString(),
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
   };
 }

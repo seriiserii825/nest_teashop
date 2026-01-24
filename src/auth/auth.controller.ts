@@ -1,30 +1,32 @@
-import { TypedBody, TypedRoute } from '@nestia/core';
 import {
   BadGatewayException,
+  Body,
   Controller,
+  Get,
   HttpCode,
+  Post,
   Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import type { Request, Response } from 'express';
-import type { TCreateUserDto, TUserResponseDto } from 'src/user/dto/user.dto';
+import { TCreateUserDto, TUserResponseDto } from 'src/user/dto/user.dto';
 import { AuthService } from './auth.service';
 import { ILoginResponseWithoutRefresh } from './interfaces/ILoginResponse';
-import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @TypedRoute.Post('register')
-  create(@TypedBody() input: TCreateUserDto): Promise<TUserResponseDto> {
+  @Post('register')
+  create(@Body() input: TCreateUserDto): Promise<TUserResponseDto> {
     return this.authService.register(input);
   }
 
-  @TypedRoute.Post('login')
+  @Post('login')
   async login(
-    @TypedBody() input: TCreateUserDto,
+    @Body() input: TCreateUserDto,
     @Res({ passthrough: true }) res: Response,
   ): Promise<ILoginResponseWithoutRefresh> {
     const { tokens, ...user } = await this.authService.login(input);
@@ -33,7 +35,7 @@ export class AuthController {
     return { ...user, tokens: { accessToken: tokens.accessToken } };
   }
 
-  @TypedRoute.Post('login/access-token')
+  @Post('login/access-token')
   async loginAccessToken(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
@@ -50,19 +52,19 @@ export class AuthController {
   }
 
   @HttpCode(200)
-  @TypedRoute.Post('logout')
+  @Post('logout')
   logout(@Res({ passthrough: true }) res: Response): void {
     this.authService.removeRefreshTokenFromResponse(res);
   }
 
   @UseGuards(AuthGuard('google'))
-  @TypedRoute.Get('google')
+  @Get('google')
   googleAuth(@Req() _req: Request) {
     console.log('Google auth', _req.user);
   }
 
   @UseGuards(AuthGuard('google'))
-  @TypedRoute.Get('google/callback')
+  @Get('google/callback')
   async googleAuthCallback(
     @Req() req: { user: { name: string; email: string; picture: string } },
     @Res() res: Response,

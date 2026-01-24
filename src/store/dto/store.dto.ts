@@ -1,15 +1,44 @@
-import { tags } from 'typia';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
 
-type StoreDto = {
+export class CreateStoreDto {
+  @ApiProperty({ minLength: 2 })
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(2)
+  title: string;
+}
+
+export class UpdateStoreDto {
+  @ApiPropertyOptional({ minLength: 2 })
+  @IsOptional()
+  @IsString()
+  @MinLength(2)
+  title?: string;
+
+  @ApiPropertyOptional({ minLength: 10 })
+  @IsOptional()
+  @IsString()
+  @MinLength(10)
+  description?: string;
+}
+
+export class StoreResponseDto {
+  @ApiProperty()
   id: number;
-  title: string & tags.MinLength<2>;
-  description?: string & tags.MinLength<10>;
+
+  @ApiProperty()
+  title: string;
+
+  @ApiPropertyOptional()
+  description?: string;
+
+  @ApiProperty()
   user_id: number;
-  createdAt: string & tags.Format<'date-time'>;
-  updatedAt: string & tags.Format<'date-time'>;
-};
 
-export type CreateStoreDto = Pick<StoreDto, 'title'>;
-export type UpdateStoreDto = Partial<Pick<StoreDto, 'title' | 'description'>>;
+  @ApiProperty()
+  createdAt: Date;
 
-export type StoreResponseDto = StoreDto;
+  @ApiProperty()
+  updatedAt: Date;
+}

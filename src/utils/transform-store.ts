@@ -7,7 +7,7 @@ export function transformStoreToDto(store: Store): StoreResponseDto {
     title: store.title,
     user_id: store.user_id,
     description: store.description ?? undefined,
-    createdAt: store.createdAt.toISOString(),
-    updatedAt: store.updatedAt.toISOString(),
+    createdAt: store.createdAt,
+    updatedAt: store.updatedAt,
   };
 }
