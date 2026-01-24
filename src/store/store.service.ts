@@ -1,23 +1,78 @@
-import { Injectable } from '@nestjs/common';
-import { CreateStoreDto } from './dto/create-store.dto';
-import { UpdateStoreDto } from './dto/update-store.dto';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { transformStoreToDto } from '../utils/transform-store';
+import {
+  CreateStoreDto,
+  StoreResponseDto,
+  UpdateStoreDto,
+} from './dto/store.dto';
+import { Store } from './entities/store.entity';
 
 @Injectable()
 export class StoreService {
-  create(createStoreDto: CreateStoreDto) {
-    return 'This action adds a new store';
+  constructor(
+    @InjectRepository(Store) private storeRepository: Repository<Store>,
+  ) {}
+  async create(createStoreDto: CreateStoreDto, user_id: number) {
+    await this.checkStoreByTitle(createStoreDto.title, user_id);
+    const newStore = this.storeRepository.create({
+      title: createStoreDto.title,
+      user_id,
+    });
+    await this.storeRepository.save(newStore);
+    return transformStoreToDto(newStore);
   }
 
-  findAll() {
-    return `This action returns all store`;
+  findAll(user_id: number) {
+    return this.storeRepository.find({
+      where: { user_id },
+      order: { createdAt: 'DESC' },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} store`;
+  async findOne(id: number, user_id: number): Promise<StoreResponseDto> {
+    const store = await this.storeRepository.findOne({
+      where: { id, user_id },
+    });
+    if (!store) {
+      throw new NotFoundException(`Store with ID ${id} not found`);
+    }
+    return transformStoreToDto(store);
   }
 
-  update(id: number, updateStoreDto: UpdateStoreDto) {
-    return `This action updates a #${id} store`;
+  async checkStoreByTitle(title: string, user_id: number): Promise<void> {
+    const store = await this.storeRepository.findOne({
+      where: { title, user_id },
+    });
+    if (store) {
+      throw new NotFoundException(`Store with title ${title} already found`);
+    }
+  }
+
+  async update(id: number, updateStoreDto: UpdateStoreDto, user_id: number) {
+    // Check if there are fields to update
+    if (Object.keys(updateStoreDto).length === 0) {
+      throw new BadRequestException('No fields to update');
+    }
+
+    // Only check title if it's being updated
+    if (updateStoreDto.title) {
+      await this.checkStoreByTitle(updateStoreDto.title, user_id);
+    }
+
+    const store = await this.findOne(id, user_id);
+
+    // Merge the updates
+    Object.assign(store, updateStoreDto);
+
+    // Save and return the updated store
+    const updatedStore = await this.storeRepository.save(store);
+    return updatedStore;
   }
 
   remove(id: number) {
