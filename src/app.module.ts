@@ -24,10 +24,9 @@ import { AuthModule } from './auth/auth.module';
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        // Для production используйте миграции
+        autoLoadEntities: true,
         migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
-        migrationsRun: false, // Автоматически запускать миграции
+        migrationsRun: false,
       }),
       inject: [ConfigService],
     }),
