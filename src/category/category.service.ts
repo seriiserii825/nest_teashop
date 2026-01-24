@@ -1,26 +1,98 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { StoreService } from 'src/store/store.service';
+import { Not, Repository } from 'typeorm';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { Category } from './entities/category.entity';
 
 @Injectable()
 export class CategoryService {
-  create(createCategoryDto: CreateCategoryDto) {
-    return 'This action adds a new category';
+  constructor(
+    @InjectRepository(Category)
+    private categoryRepository: Repository<Category>,
+    private storeService: StoreService,
+  ) {}
+
+  async create(
+    createCategoryDto: CreateCategoryDto,
+    store_id: number,
+    user_id: number,
+  ) {
+    await this.storeService.findOne(store_id, user_id);
+    await this.hasTheSameTitleInStore(createCategoryDto.title, store_id);
+    const category = this.categoryRepository.create({
+      ...createCategoryDto,
+      store_id,
+    });
+    return this.categoryRepository.save(category);
   }
 
-  findAll() {
-    return `This action returns all category`;
+  async findAll(store_id: number) {
+    return this.categoryRepository.find({ where: { store_id } });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} category`;
+  async findOne(id: number, store_id: number) {
+    const category = await this.categoryRepository.findOne({
+      where: { id, store_id },
+    });
+    if (!category) {
+      throw new NotFoundException(
+        `Category with id ${id} not found in your store`,
+      );
+    }
+    return category;
   }
 
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
+  async update(
+    id: number,
+    store_id: number,
+    updateCategoryDto: UpdateCategoryDto,
+  ) {
+    if (updateCategoryDto.title) {
+      await this.hasTheSameTitleInStoreWithoutCurrent(
+        updateCategoryDto.title,
+        store_id,
+        id,
+      );
+    }
+    const category = await this.findOne(id, store_id);
+    Object.assign(category, updateCategoryDto);
+    return this.categoryRepository.save(category);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+  async remove(id: number, store_id: number) {
+    const category = await this.findOne(id, store_id);
+    return this.categoryRepository.remove(category);
+  }
+
+  async hasTheSameTitleInStore(title: string, store_id: number): Promise<void> {
+    const category = await this.categoryRepository.findOne({
+      where: { title, store_id },
+    });
+    if (category) {
+      throw new ConflictException(
+        `Category '${title}' already exists in your store`,
+      );
+    }
+  }
+
+  async hasTheSameTitleInStoreWithoutCurrent(
+    title: string,
+    store_id: number,
+    category_id: number,
+  ): Promise<void> {
+    const category = await this.categoryRepository.findOne({
+      where: { title, store_id, id: Not(category_id) },
+    });
+    if (category) {
+      throw new ConflictException(
+        'Category title already exists in your store',
+      );
+    }
   }
 }

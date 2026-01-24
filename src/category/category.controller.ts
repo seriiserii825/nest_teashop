@@ -1,34 +1,75 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
+import {
+  ApiBody,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiParam,
+} from '@nestjs/swagger';
+import { CurrentUser } from 'src/user/decorators/user.decorator';
 import { CategoryService } from './category.service';
-import { CreateCategoryDto } from './dto/create-category.dto';
+import {
+  CategoryResponseDto,
+  CreateCategoryDto,
+} from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
-@Controller('category')
+@Controller('categories')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
-  @Post()
-  create(@Body() createCategoryDto: CreateCategoryDto) {
-    return this.categoryService.create(createCategoryDto);
+  @Post(':store_id')
+  @ApiParam({ name: 'store_id', type: 'string' })
+  @ApiBody({ type: CreateCategoryDto })
+  @ApiCreatedResponse({ type: CategoryResponseDto })
+  create(
+    @CurrentUser('id') user_id: number,
+    @Body() createCategoryDto: CreateCategoryDto,
+    @Param('store_id') store_id: string,
+  ) {
+    return this.categoryService.create(createCategoryDto, +store_id, user_id);
   }
 
-  @Get()
-  findAll() {
-    return this.categoryService.findAll();
+  @Get(':store_id')
+  @ApiParam({ name: 'store_id', type: 'string' })
+  @ApiOkResponse({ type: [CategoryResponseDto] })
+  findAll(@Param('store_id') store_id: string) {
+    return this.categoryService.findAll(+store_id);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.categoryService.findOne(+id);
+  @Get(':id/:store_id')
+  @ApiParam({ name: 'id', type: 'string' })
+  @ApiParam({ name: 'store_id', type: 'string' })
+  @ApiOkResponse({ type: CategoryResponseDto })
+  findOne(@Param('id') id: string, @Param('store_id') store_id: string) {
+    return this.categoryService.findOne(+id, +store_id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCategoryDto: UpdateCategoryDto) {
-    return this.categoryService.update(+id, updateCategoryDto);
+  @Patch(':id/:store_id')
+  @ApiParam({ name: 'id', type: 'string' })
+  @ApiParam({ name: 'store_id', type: 'string' })
+  @ApiBody({ type: UpdateCategoryDto })
+  @ApiOkResponse({ type: CategoryResponseDto })
+  update(
+    @Param('id') id: string,
+    @Param('store_id') store_id: string,
+    @Body() updateCategoryDto: UpdateCategoryDto,
+  ) {
+    return this.categoryService.update(+id, +store_id, updateCategoryDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.categoryService.remove(+id);
+  @Delete(':id/:store_id')
+  @ApiParam({ name: 'id', type: 'string' })
+  @ApiParam({ name: 'store_id', type: 'string' })
+  @ApiOkResponse({ type: CategoryResponseDto })
+  remove(@Param('id') id: string, @Param('store_id') store_id: string) {
+    return this.categoryService.remove(+id, +store_id);
   }
 }
