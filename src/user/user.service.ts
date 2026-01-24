@@ -3,23 +3,23 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
 import { hash } from 'argon2';
+import { Repository } from 'typeorm';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { TCreateUserDto } from './dto/user.dto';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
-  async create(createUserDto: CreateUserDto) {
-    await this.userExists(createUserDto.email);
-    const hashedPassword = await hash(createUserDto.password);
+  async create(input: TCreateUserDto) {
+    await this.userExists(input.email);
+    const hashedPassword = await hash(input.password);
     const newUser = this.userRepository.create({
-      ...createUserDto,
+      ...input,
       password: hashedPassword,
     });
     await this.userRepository.save(newUser);

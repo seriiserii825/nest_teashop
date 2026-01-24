@@ -1,14 +1,6 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-} from '@nestjs/common';
-import { ApiBody, ApiResponse } from '@nestjs/swagger';
-import { CreateUserDto, UserResponseDto } from 'src/user/dto/create-user.dto';
+import { TypedBody, TypedRoute } from '@nestia/core';
+import { Body, Controller, Delete, Get, Param, Patch } from '@nestjs/common';
+import type { TCreateUserDto } from 'src/user/dto/user.dto';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
 import { UpdateAuthDto } from './dto/update-auth.dto';
@@ -20,11 +12,9 @@ export class AuthController {
     private readonly userService: UserService,
   ) {}
 
-  @ApiBody({ type: CreateUserDto })
-  @ApiResponse({ type: UserResponseDto })
-  @Post('register')
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  @TypedRoute.Post('register')
+  create(@TypedBody() input: TCreateUserDto) {
+    return this.userService.create(input);
   }
 
   @Get()
