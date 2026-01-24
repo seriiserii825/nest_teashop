@@ -1,10 +1,10 @@
-import { Controller, Delete, Get, Param, Patch } from '@nestjs/common';
+import { Controller, Get, Param, Patch } from '@nestjs/common';
+import { ApiOkResponse } from '@nestjs/swagger';
 import { AuthJwt } from 'src/auth/decorators/auth.jwt.decorator';
 import { CurrentUser } from './decorators/user.decorator';
 import { TUserResponseDto } from './dto/user.dto';
-import { UserService } from './user.service';
 import { User } from './entities/user.entity';
-import { ApiOkResponse } from '@nestjs/swagger';
+import { UserService } from './user.service';
 
 @AuthJwt()
 @Controller('users')

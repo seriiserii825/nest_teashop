@@ -4,8 +4,8 @@ import {
   Delete,
   Get,
   Param,
-  Patch,
   Post,
+  Put,
 } from '@nestjs/common';
 import { ApiBody, ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
 import { AuthJwt } from 'src/auth/decorators/auth.jwt.decorator';
@@ -47,7 +47,7 @@ export class StoreController {
     return this.storeService.findOne(+id, user.id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   @ApiBody({ type: UpdateStoreDto })
   @ApiOkResponse({ type: StoreResponseDto })
   update(

@@ -9,6 +9,10 @@ export function transformUserToDto(user: User): TUserResponseDto {
     name: user.name,
     email: user.email,
     picture: user.picture,
+    stores: user.stores,
+    favorites: user.favorites,
+    reviews: user.reviews,
+    orders: user.orders,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
   };

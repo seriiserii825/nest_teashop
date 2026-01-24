@@ -6,6 +6,10 @@ import {
   IsString,
   MinLength,
 } from 'class-validator';
+import { Order } from 'src/order/entities/order.entity';
+import { Product } from 'src/product/entities/product.entity';
+import { Review } from 'src/review/entities/review.entity';
+import { Store } from 'src/store/entities/store.entity';
 
 export class TCreateUserDto {
   @ApiPropertyOptional({ minLength: 2 })
@@ -38,6 +42,18 @@ export class TUserResponseDto {
 
   @ApiProperty()
   picture: string;
+
+  @ApiProperty({ type: [Store] })
+  stores: Store[];
+
+  @ApiProperty({ type: [Review] })
+  reviews: Review[];
+
+  @ApiProperty({ type: [Product] })
+  favorites: Product[];
+
+  @ApiProperty({ type: [Order] })
+  orders: Order[];
 
   @ApiProperty()
   createdAt: Date;
