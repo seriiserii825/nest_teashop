@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsNumber, IsString } from 'class-validator';
+import { ArrayMinSize, IsDate, IsNumber, IsString } from 'class-validator';
 
 class Product {
   @ApiProperty({ example: 1, description: 'Product ID' })
@@ -25,7 +25,7 @@ class Product {
     example: 'http://example.com/images/green-tea.jpg',
     description: 'Product Images URL',
   })
-  @IsString()
+  @ArrayMinSize(1, { message: 'At least one image is required.' })
   images: string;
 
   @ApiProperty({ example: 1, description: 'Store ID' })
