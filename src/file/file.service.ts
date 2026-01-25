@@ -7,7 +7,7 @@ import IFileResponse from './interfaces/IFile';
 export class FileService {
   async saveFiles(
     files: Express.Multer.File[],
-    folder: string = '',
+    folder: string = 'products',
   ): Promise<IFileResponse[]> {
     const uploadedFolder = `${path}/uploads/${folder}`;
     await ensureDir(uploadedFolder);
