@@ -1,5 +1,14 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { ArrayMinSize, IsDate, IsNumber, IsString } from 'class-validator';
+import { ApiProperty, PickType } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import {
+  ArrayMinSize,
+  IsArray,
+  IsDate,
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 
 class Product {
   @ApiProperty({ example: 1, description: 'Product ID' })
@@ -22,10 +31,14 @@ class Product {
   price: number;
 
   @ApiProperty({
-    example: 'http://example.com/images/green-tea.jpg',
-    description: 'Product Images URL',
+    example:
+      '["http://example.com/image1.jpg", "http://example.com/image2.jpg"]',
+    description: 'Product Images without domain',
   })
   @ArrayMinSize(1, { message: 'At least one image is required.' })
+  @IsString({
+    each: true,
+  })
   images: string;
 
   @ApiProperty({ example: 1, description: 'Store ID' })
@@ -59,4 +72,52 @@ class Product {
   updatedAt: Date;
 }
 
-export class CreateProductDto extends Product {}
+export class CreateProductDto extends PickType(Product, [
+  'title',
+  'description',
+  'price',
+  'category_id',
+  'color_id',
+]) {
+  @ApiProperty({
+    type: 'array',
+    items: { type: 'string', format: 'binary' },
+    description: 'Product images (max 10 files)',
+    required: false,
+  })
+  @IsOptional()
+  images?: any[];
+}
+
+export class ProductResponseDto extends Product {}
+
+class PaginationMetaDto {
+  @ApiProperty({ example: 100, description: 'Total number of items' })
+  @IsNumber()
+  total: number;
+
+  @ApiProperty({ example: 1, description: 'Current page number' })
+  @IsNumber()
+  page: number;
+
+  @ApiProperty({ example: 10, description: 'Items per page' })
+  @IsNumber()
+  limit: number;
+
+  @ApiProperty({ example: 10, description: 'Total number of pages' })
+  @IsNumber()
+  totalPages: number;
+}
+
+export class AllProductsResponseDto {
+  @ApiProperty({ type: [ProductResponseDto], description: 'Array of products' })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ProductResponseDto)
+  data: ProductResponseDto[];
+
+  @ApiProperty({ type: PaginationMetaDto, description: 'Pagination metadata' })
+  @ValidateNested()
+  @Type(() => PaginationMetaDto)
+  meta: PaginationMetaDto;
+}

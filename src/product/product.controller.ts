@@ -1,33 +1,101 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ProductService } from './product.service';
-import { CreateProductDto } from './dto/create-product.dto';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UploadedFiles,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import {
+  ApiBody,
+  ApiConflictResponse,
+  ApiConsumes,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import { AuthJwt } from 'src/auth/decorators/auth.jwt.decorator';
+import {
+  AllProductsResponseDto,
+  CreateProductDto,
+  ProductResponseDto,
+} from './dto/create-product.dto';
+import { QueryProductDto } from './dto/query-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { ProductService } from './product.service';
+import { CurrentUser } from 'src/user/decorators/user.decorator';
 
-@Controller('product')
+@ApiUnauthorizedResponse({ description: 'Unauthorized' })
+@AuthJwt()
+@Controller('products')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
-  @Post()
-  create(@Body() createProductDto: CreateProductDto) {
-    return this.productService.create(createProductDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.productService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.productService.findOne(+id);
+  @Post('store/:storeId')
+  @ApiBody({ type: CreateProductDto })
+  @ApiConflictResponse({
+    description: 'Product with this title already exists in the store',
+  })
+  @ApiOkResponse({ type: ProductResponseDto })
+  @UseInterceptors(FilesInterceptor('images', 10)) // максимум 10 файлов
+  @ApiConsumes('multipart/form-data')
+  create(
+    @CurrentUser('id') user_id: number,
+    @Body() createProductDto: CreateProductDto,
+    @Param('storeId') storeId: string,
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
+    return this.productService.create(
+      +storeId,
+      createProductDto,
+      files,
+      user_id,
+    );
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-    return this.productService.update(+id, updateProductDto);
+  @ApiBody({ type: UpdateProductDto })
+  @UseInterceptors(FilesInterceptor('images', 10)) // максимум 10 файлов
+  @ApiConsumes('multipart/form-data')
+  @ApiOkResponse({ type: ProductResponseDto })
+  update(
+    @Param('id') id: string,
+    @Body() updateProductDto: UpdateProductDto,
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
+    return this.productService.update(+id, updateProductDto, files);
+  }
+
+  @Get()
+  @ApiOkResponse({ type: AllProductsResponseDto })
+  findAll(@Query() query: QueryProductDto) {
+    return this.productService.findAll(query);
+  }
+
+  @Get('store/:storeId')
+  @ApiOkResponse({ type: AllProductsResponseDto })
+  @ApiBody({ type: QueryProductDto })
+  findAllByStoreID(
+    @Param('storeId') storeId: string,
+    @Query() query: QueryProductDto,
+  ) {
+    return this.productService.findAllByStoreID(storeId, query);
+  }
+
+  @Get(':id')
+  @ApiNotFoundResponse({ description: 'Product not found' })
+  @ApiOkResponse({ type: ProductResponseDto })
+  findById(@Param('id') id: string) {
+    return this.productService.findById(+id);
   }
 
   @Delete(':id')
+  @ApiNotFoundResponse({ description: 'Product not found' })
   remove(@Param('id') id: string) {
     return this.productService.remove(+id);
   }

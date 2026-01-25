@@ -29,7 +29,7 @@ export class Product {
   @Column()
   price: number;
 
-  @Column()
+  @Column('text', { array: true })
   images: string[];
 
   @ManyToOne(() => Store, (store) => store.id, { onDelete: 'CASCADE' })
