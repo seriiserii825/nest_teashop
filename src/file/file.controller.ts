@@ -18,7 +18,7 @@ export class FileController {
   @UseInterceptors(FilesInterceptor('files'))
   async saveFiles(
     @UploadedFiles() files: Express.Multer.File[],
-    @Query() folder: string,
+    @Query('folder') folder: string,
   ) {
     return this.fileService.saveFiles(files, folder);
   }
