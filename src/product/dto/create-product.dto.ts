@@ -9,6 +9,12 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
+import { CategoryResponseDto } from 'src/category/dto/create-category.dto';
+import { ColorResponseDto } from 'src/color/dto/create-color.dto';
+import { OrderItem } from 'src/order-item/entities/order-item.entity';
+import { Review } from 'src/review/entities/review.entity';
+import { StoreResponseDto } from 'src/store/dto/store.dto';
+import { User } from 'src/user/entities/user.entity';
 
 class Product {
   @ApiProperty({ example: 1, description: 'Product ID' })
@@ -89,7 +95,14 @@ export class CreateProductDto extends PickType(Product, [
   images?: any[];
 }
 
-export class ProductResponseDto extends Product {}
+export class ProductResponseDto extends Product {
+  store: StoreResponseDto;
+  category: CategoryResponseDto;
+  color: ColorResponseDto;
+  user: User;
+  reviews: Review[];
+  order_items: OrderItem[];
+}
 
 class PaginationMetaDto {
   @ApiProperty({ example: 100, description: 'Total number of items' })

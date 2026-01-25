@@ -17,6 +17,7 @@ import {
   ApiConsumes,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiParam,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { AuthJwt } from 'src/auth/decorators/auth.jwt.decorator';
@@ -59,6 +60,7 @@ export class ProductController {
   }
 
   @Patch(':id')
+  @ApiParam({ name: 'id', description: 'Product ID' })
   @ApiBody({ type: UpdateProductDto })
   @UseInterceptors(FilesInterceptor('images', 10)) // максимум 10 файлов
   @ApiConsumes('multipart/form-data')
