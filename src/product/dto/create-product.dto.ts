@@ -96,12 +96,59 @@ export class CreateProductDto extends PickType(Product, [
 }
 
 export class ProductResponseDto extends Product {
+  @ApiProperty({
+    type: () => StoreResponseDto,
+    description: 'Store information',
+  })
+  @ValidateNested()
+  @Type(() => StoreResponseDto)
   store: StoreResponseDto;
+
+  @ApiProperty({
+    type: () => CategoryResponseDto,
+    description: 'Category information',
+  })
+  @ValidateNested()
+  @Type(() => CategoryResponseDto)
   category: CategoryResponseDto;
+
+  @ApiProperty({
+    type: () => ColorResponseDto,
+    description: 'Color information',
+  })
+  @ValidateNested()
+  @Type(() => ColorResponseDto)
   color: ColorResponseDto;
+
+  @ApiProperty({
+    type: () => User,
+    description: 'User who created the product',
+  })
+  @ValidateNested()
+  @Type(() => User)
   user: User;
-  reviews: Review[];
-  order_items: OrderItem[];
+
+  @ApiProperty({
+    type: () => [Review],
+    description: 'Product reviews',
+    required: false,
+  })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => Review)
+  @IsOptional()
+  reviews?: Review[];
+
+  @ApiProperty({
+    type: () => [OrderItem],
+    description: 'Order items',
+    required: false,
+  })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => OrderItem)
+  @IsOptional()
+  order_items?: OrderItem[];
 }
 
 class PaginationMetaDto {
