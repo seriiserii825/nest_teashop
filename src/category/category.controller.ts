@@ -22,7 +22,7 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
-  @Post(':store_id')
+  @Post('store/:store_id')
   @ApiParam({ name: 'store_id', type: 'string' })
   @ApiBody({ type: CreateCategoryDto })
   @ApiCreatedResponse({ type: CategoryBasicDto })
@@ -34,14 +34,14 @@ export class CategoryController {
     return this.categoryService.create(createCategoryDto, +store_id, user_id);
   }
 
-  @Get(':store_id')
+  @Get('store/:store_id')
   @ApiParam({ name: 'store_id', type: 'string' })
   @ApiOkResponse({ type: [CategoryBasicDto] })
   findAll(@Param('store_id') store_id: string): Promise<CategoryBasicDto[]> {
     return this.categoryService.findAll(+store_id);
   }
 
-  @Get(':id/:store_id')
+  @Get(':id/store/:store_id')
   @ApiParam({ name: 'id', type: 'string' })
   @ApiParam({ name: 'store_id', type: 'string' })
   @ApiOkResponse({ type: CategoryBasicDto })
@@ -52,7 +52,7 @@ export class CategoryController {
     return this.categoryService.findOne(+id, +store_id);
   }
 
-  @Patch(':id/:store_id')
+  @Patch(':id/store/:store_id')
   @ApiParam({ name: 'id', type: 'string' })
   @ApiParam({ name: 'store_id', type: 'string' })
   @ApiBody({ type: UpdateCategoryDto })
@@ -65,7 +65,7 @@ export class CategoryController {
     return this.categoryService.update(+id, +store_id, updateCategoryDto);
   }
 
-  @Delete(':id/:store_id')
+  @Delete(':id/store/:store_id')
   @ApiParam({ name: 'id', type: 'string' })
   @ApiParam({ name: 'store_id', type: 'string' })
   @ApiOkResponse({ type: CategoryBasicDto })
