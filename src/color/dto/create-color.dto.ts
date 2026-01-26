@@ -12,7 +12,9 @@ export class ColorBasicDto {
 
   @ApiProperty({ example: '#FF0000', description: 'Color Value in HEX format' })
   @IsString()
-  @Matches(/^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/)
+  @Matches(/^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/, {
+    message: 'value must be a valid HEX color code',
+  })
   value: string;
 
   @ApiProperty({ example: 1, description: 'Store ID' })

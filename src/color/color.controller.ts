@@ -25,7 +25,7 @@ import { CurrentUser } from 'src/user/decorators/user.decorator';
 export class ColorController {
   constructor(private readonly colorService: ColorService) {}
 
-  @Post(':store_id')
+  @Post('store/:store_id')
   @ApiParam({ name: 'store_id', type: Number })
   @ApiBody({ type: CreateColorDto })
   @ApiCreatedResponse({ type: ColorBasicDto })
@@ -37,14 +37,14 @@ export class ColorController {
     return this.colorService.create(createColorDto, store_id, user_id);
   }
 
-  @Get(':store_id')
+  @Get('store/:store_id')
   @ApiParam({ name: 'store_id', type: Number, description: 'Store ID' })
   @ApiOkResponse({ type: [ColorBasicDto] })
   findAll(@Param('store_id') store_id: string): Promise<ColorBasicDto[]> {
     return this.colorService.findAll(+store_id);
   }
 
-  @Get(':id/:store_id')
+  @Get(':id/store/:store_id')
   @ApiParam({ name: 'id', type: Number, description: 'Color ID' })
   @ApiParam({ name: 'store_id', type: Number, description: 'Store ID' })
   @ApiOkResponse({ type: ColorBasicDto })
@@ -55,7 +55,7 @@ export class ColorController {
     return this.colorService.findOne(+id, +store_id);
   }
 
-  @Patch(':id/:store_id')
+  @Patch(':id/store/:store_id')
   @ApiParam({ name: 'id', type: Number, description: 'Color ID' })
   @ApiParam({ name: 'store_id', type: Number, description: 'Store ID' })
   @ApiOkResponse({ type: ColorBasicDto })
@@ -68,7 +68,7 @@ export class ColorController {
     return this.colorService.update(+id, +store_id, updateColorDto, user_id);
   }
 
-  @Delete(':id/:store_id')
+  @Delete(':id/store/:store_id')
   @ApiParam({ name: 'id', type: Number, description: 'Color ID' })
   @ApiParam({ name: 'store_id', type: Number, description: 'Store ID' })
   @ApiOkResponse({ type: ColorBasicDto })
