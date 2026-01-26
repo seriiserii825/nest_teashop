@@ -20,7 +20,7 @@ import { UpdateReviewDto } from './dto/update-review.dto';
 import { ReviewService } from './review.service';
 
 @AuthJwt()
-@Controller('review')
+@Controller('reviews')
 export class ReviewController {
   constructor(private readonly reviewService: ReviewService) {}
 

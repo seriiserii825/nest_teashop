@@ -28,6 +28,7 @@ export class ReviewService {
   findAll(store_id: number, user_id: number): Promise<ReviewBasicDto[]> {
     return this.reviewRepository.find({
       where: { store_id, user_id },
+      order: { updatedAt: 'DESC' },
     });
   }
 
