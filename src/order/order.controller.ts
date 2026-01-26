@@ -1,42 +1,41 @@
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-} from '@nestjs/common';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
+  ApiBody,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import { AuthJwt } from 'src/auth/decorators/auth.jwt.decorator';
+import { CurrentUser } from 'src/user/decorators/user.decorator';
+import { CreateOrderDto, OrderBasicDto } from './dto/create-order.dto';
 import { OrderService } from './order.service';
 
-@Controller('order')
+@ApiUnauthorizedResponse({ description: 'Unauthorized' })
+@AuthJwt()
+@Controller('orders')
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
-  @Post('store/:store_id')
-  create(@Body() createOrderDto: CreateOrderDto) {
-    return this.orderService.create(createOrderDto);
+  @Post('place/store/:store_id')
+  @ApiBody({ type: CreateOrderDto })
+  @ApiOkResponse({ type: OrderBasicDto })
+  create(
+    @CurrentUser('id') user_id: string,
+    @Body() createOrderDto: CreateOrderDto,
+  ) {
+    return this.orderService.create(createOrderDto, +user_id);
   }
 
-  @Get('store/:store_id')
+  @Get()
+  @ApiOkResponse(ordersResponse)
   findAll() {
     return this.orderService.findAll();
   }
 
-  @Get(':id/store/:store_id')
+  @Get(':id')
+  @ApiNotFoundResponse({ description: 'Order not found' })
+  @ApiOkResponse(orderResponse)
   findOne(@Param('id') id: string) {
-    return this.orderService.findOne(+id);
-  }
-
-  @Patch(':id/store/:store_id')
-  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-    return this.orderService.update(+id, updateOrderDto);
-  }
-
-  @Delete(':id/store/:store_id')
-  remove(@Param('id') id: string) {
-    return this.orderService.remove(+id);
+    return this.orderService.findOne(id);
   }
 }

@@ -11,7 +11,7 @@ import {
 import { OrderItem } from '../../order-item/entities/order-item.entity';
 import { User } from '../../user/entities/user.entity';
 
-enum OrderStatus {
+export enum OrderStatus {
   PENDING = 'PENDING',
   PAID = 'PAID',
 }
