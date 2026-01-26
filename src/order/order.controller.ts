@@ -3,6 +3,7 @@ import {
   ApiBody,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiParam,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { AuthJwt } from 'src/auth/decorators/auth.jwt.decorator';
@@ -16,7 +17,7 @@ import { OrderService } from './order.service';
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
-  @Post('place/store/:store_id')
+  @Post('place')
   @ApiBody({ type: CreateOrderDto })
   @ApiOkResponse({ type: OrderBasicDto })
   create(
@@ -28,11 +29,12 @@ export class OrderController {
 
   @Get()
   @ApiOkResponse({ type: [OrderBasicDto] })
-  findAll() {
-    return this.orderService.findAll();
+  findAll(@CurrentUser('id') user_id: string) {
+    return this.orderService.findAll(+user_id);
   }
 
   @Get(':id')
+  @ApiParam({ name: 'id', description: 'Order ID' })
   @ApiNotFoundResponse({ description: 'Order not found' })
   @ApiOkResponse({ type: OrderBasicDto })
   findOne(@Param('id') id: string) {

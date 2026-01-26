@@ -8,5 +8,6 @@ import { OrderItemService } from './order-item.service';
   imports: [TypeOrmModule.forFeature([OrderItem])],
   controllers: [OrderItemController],
   providers: [OrderItemService],
+  exports: [OrderItemService],
 })
 export class OrderItemModule {}

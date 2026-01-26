@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PickType } from '@nestjs/swagger';
 import { IsDate, IsNumber } from 'class-validator';
 
 export class OrderItemsBasicDto {
@@ -40,4 +40,8 @@ export class OrderItemsBasicDto {
   @IsDate()
   updatedAt: Date;
 }
-export class CreateOrderItemDto {}
+export class CreateOrderItemDto extends PickType(OrderItemsBasicDto, [
+  'quantity',
+  'price',
+  'product_id',
+]) {}
