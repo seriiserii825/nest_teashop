@@ -5,13 +5,8 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { hash } from 'argon2';
-import { transformUserToDto } from 'src/utils/transform-user';
 import { Repository } from 'typeorm';
-import {
-  IUserFavorite,
-  TCreateUserDto,
-  TUserResponseDto,
-} from './dto/user.dto';
+import { CreateUserDto, UserBasicDto } from './dto/user.dto';
 import { User } from './entities/user.entity';
 
 @Injectable()
@@ -19,7 +14,7 @@ export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
-  async create(input: TCreateUserDto): Promise<TUserResponseDto> {
+  async create(input: CreateUserDto): Promise<UserBasicDto> {
     await this.userExists(input.email);
     const hashedPassword = await hash(input.password);
     const newUser = this.userRepository.create({
@@ -28,12 +23,10 @@ export class UserService {
     });
     await this.userRepository.save(newUser);
     delete (newUser as Partial<User>).password;
-    return transformUserToDto(newUser);
+    return newUser;
   }
 
-  async createForGoogle(
-    input: Omit<TCreateUserDto, 'password'>,
-  ): Promise<User> {
+  async createForGoogle(input: Omit<CreateUserDto, 'password'>): Promise<User> {
     await this.userExists(input.email);
     const newUser = this.userRepository.create({
       ...input,
@@ -48,7 +41,7 @@ export class UserService {
     });
   }
 
-  async findOne(id: number): Promise<TUserResponseDto> {
+  async findOne(id: number): Promise<UserBasicDto> {
     const user = await this.userRepository.findOne({
       where: { id },
       relations: ['stores', 'favorites', 'orders'],
@@ -56,7 +49,7 @@ export class UserService {
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
-    return transformUserToDto(user);
+    return user;
   }
 
   async findByEmail(email: string): Promise<User> {
@@ -88,44 +81,42 @@ export class UserService {
     }
   }
 
-  async toggleFavorite(
-    _productId: number,
-    userId: number,
-  ): Promise<IUserFavorite> {
-    const user = await this.findOne(userId);
+  // async toggleFavorite(
+  //   _productId: number,
+  //   userId: number,
+  // ): Promise<IUserFavorite> {
+  //TODO: implement after add Product entity
+  // // Проверяем существование продукта
+  // const product = await this.productRepository.findOne({
+  //   where: { id: productId },
+  // });
+  //
+  // if (!product) {
+  //   throw new NotFoundException('Product not found');
+  // }
+  //
+  // // // Проверяем, есть ли продукт в избранном
+  // const productIndex = user.favorites.findIndex((p) => p.id === productId);
+  //
+  // if (productIndex !== -1) {
+  //   // Убираем из избранного
+  //   user.favorites.splice(productIndex, 1);
+  // } else {
+  //   // Добавляем в избранное
+  //   user.favorites.push(product);
+  // }
+  //
+  // // Сохраняем изменения
+  // await this.userRepository.save(user);
 
-    //TODO: implement after add Product entity
-    // // Проверяем существование продукта
-    // const product = await this.productRepository.findOne({
-    //   where: { id: productId },
-    // });
-    //
-    // if (!product) {
-    //   throw new NotFoundException('Product not found');
-    // }
-    //
-    // // // Проверяем, есть ли продукт в избранном
-    // const productIndex = user.favorites.findIndex((p) => p.id === productId);
-    //
-    // if (productIndex !== -1) {
-    //   // Убираем из избранного
-    //   user.favorites.splice(productIndex, 1);
-    // } else {
-    //   // Добавляем в избранное
-    //   user.favorites.push(product);
-    // }
-    //
-    // // Сохраняем изменения
-    // await this.userRepository.save(user);
-
-    // return {
-    //   message:
-    //     productIndex !== -1 ? 'Removed from favorites' : 'Added to favorites',
-    //   isFavorite: productIndex === -1,
-    // };
-    return {
-      message: 'Removed from favorites',
-      isFavorite: true,
-    };
-  }
+  // return {
+  //   message:
+  //     productIndex !== -1 ? 'Removed from favorites' : 'Added to favorites',
+  //   isFavorite: productIndex === -1,
+  // };
+  //   return {
+  //     message: 'Removed from favorites',
+  //     isFavorite: true,
+  //   };
+  // }
 }

@@ -3,6 +3,7 @@ import { Type } from 'class-transformer';
 import {
   IsEmail,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
   MinLength,
@@ -15,6 +16,10 @@ import { Review } from 'src/review/entities/review.entity';
 import { StoreBasicDto } from 'src/store/dto/store.dto';
 
 export class UserBasicDto {
+  @ApiProperty()
+  @IsNumber()
+  id: number;
+
   @ApiPropertyOptional({ minLength: 2 })
   @IsOptional()
   @IsString()
