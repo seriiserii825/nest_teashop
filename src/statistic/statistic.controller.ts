@@ -5,7 +5,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { AuthJwt } from 'src/auth/decorators/auth.jwt.decorator';
-import { statisticsResponse } from './response/statistics.response';
+import { StatisticsResponseDto } from './dto/statistic.dto';
 import { StatisticService } from './statistic.service';
 
 @ApiUnauthorizedResponse({ description: 'Unauthorized' })
@@ -16,7 +16,7 @@ export class StatisticController {
 
   @Get('main/store/:store_id')
   @ApiParam({ name: 'store_id', type: String, description: 'Store ID' })
-  @ApiOkResponse(statisticsResponse)
+  @ApiOkResponse({ type: StatisticsResponseDto })
   async getMainStatistics(@Param('store_id') store_id: string) {
     return this.statisticService.getMainStatistics(+store_id);
   }

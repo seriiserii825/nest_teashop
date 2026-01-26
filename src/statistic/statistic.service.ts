@@ -6,7 +6,7 @@ import { Order } from 'src/order/entities/order.entity';
 import { Product } from 'src/product/entities/product.entity';
 import { Review } from 'src/review/entities/review.entity';
 import { User } from 'src/user/entities/user.entity';
-import { Between, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 const dayjs = dayjsModule.default;
 
 dayjs.locale('en');
@@ -48,7 +48,7 @@ export class StatisticService {
   async countColors(store_id: number) {
     const colors_count = await this.productRepository
       .createQueryBuilder('product')
-      .select('COUNT(DISTINCT product.colorId)', 'count')
+      .select('COUNT(DISTINCT product.color_id)', 'count')
       .where('product.store_id = :store_id', { store_id })
       .getRawOne<{ count: string }>();
 
@@ -62,22 +62,15 @@ export class StatisticService {
   }
 
   private async calculateTotalRevenue(store_id: number) {
-    const orders = await this.orderRepository.find({
-      relations: ['items'],
-      where: {
-        items: {
-          store_id: store_id,
-        },
-      },
-    });
-    const totalRevenue = orders.reduce((acc, order) => {
-      const total = order.items.reduce(
-        (itemAcc, item) => itemAcc + item.price * item.quantity,
-        0,
-      );
-      return acc + total;
-    }, 0);
-    return totalRevenue;
+    const result = await this.orderRepository
+      .createQueryBuilder('order')
+      .innerJoin('order.items', 'item', 'item.store_id = :store_id', {
+        store_id,
+      })
+      .select('SUM(item.price * item.quantity)', 'total')
+      .getRawOne<{ total: string | null }>();
+
+    return result?.total ? parseFloat(result.total) : 0;
   }
   private async countProducts(store_id: number) {
     const products_count = await this.productRepository.count({
@@ -105,34 +98,26 @@ export class StatisticService {
   async calculateMonthlySales(store_id: number) {
     const startDate = dayjs().subtract(30, 'days').startOf('day').toDate();
     const endDate = dayjs().endOf('day').toDate();
-    const salesRaw = await this.orderRepository.find({
-      relations: ['orderItems'],
-      where: {
-        createdAt: Between(startDate, endDate),
-        items: {
-          store_id: store_id,
-        },
-      },
-    });
-    const formatDate = (date: Date) => dayjs(date).format('YYYY-MM-DD');
-    const salesByDate = new Map<string, number>();
-    salesRaw.forEach((order) => {
-      const dateKey = formatDate(order.createdAt);
-      const orderTotal = order.items.reduce(
-        (itemAcc, item) => itemAcc + item.price * item.quantity,
-        0,
-      );
-      if (salesByDate.has(dateKey)) {
-        salesByDate.set(dateKey, salesByDate.get(dateKey)! + orderTotal);
-      } else {
-        salesByDate.set(dateKey, orderTotal);
-      }
-    });
-    const monthlySales = Array.from(salesByDate, ([date, total]) => ({
-      date,
-      total,
+
+    const salesRaw = await this.orderRepository
+      .createQueryBuilder('order')
+      .innerJoin('order.items', 'item', 'item.store_id = :store_id', {
+        store_id,
+      })
+      .select('DATE(order.createdAt)', 'date')
+      .addSelect('SUM(item.price * item.quantity)', 'total')
+      .where('order.createdAt BETWEEN :startDate AND :endDate', {
+        startDate,
+        endDate,
+      })
+      .groupBy('DATE(order.createdAt)')
+      .orderBy('date', 'ASC')
+      .getRawMany<{ date: string; total: string }>();
+
+    return salesRaw.map((row) => ({
+      date: dayjs(row.date).format('YYYY-MM-DD'),
+      total: parseFloat(row.total),
     }));
-    return monthlySales;
   }
   async getLastUsers(store_id: number) {
     const lastUsers = await this.userRepository
