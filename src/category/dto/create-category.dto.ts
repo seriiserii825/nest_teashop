@@ -47,7 +47,7 @@ export class CategoryBasicDto {
   updatedAt: Date;
 }
 
-export class CreateCategoryBasicDto extends PickType(CategoryBasicDto, [
+export class CreateCategoryDto extends PickType(CategoryBasicDto, [
   'title',
   'description',
 ]) {}

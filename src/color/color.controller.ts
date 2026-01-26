@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { ColorService } from './color.service';
 import {
-  ColorResponseDto,
+  ColorBasicDto,
   CreateColorDto,
   UpdateColorDto,
 } from './dto/create-color.dto';
@@ -28,7 +28,7 @@ export class ColorController {
   @Post(':store_id')
   @ApiParam({ name: 'store_id', type: Number })
   @ApiBody({ type: CreateColorDto })
-  @ApiCreatedResponse({ type: ColorResponseDto })
+  @ApiCreatedResponse({ type: ColorBasicDto })
   create(
     @CurrentUser('id') user_id: number,
     @Body() createColorDto: CreateColorDto,
@@ -39,7 +39,7 @@ export class ColorController {
 
   @Get(':store_id')
   @ApiParam({ name: 'store_id', type: Number, description: 'Store ID' })
-  @ApiOkResponse({ type: [ColorResponseDto] })
+  @ApiOkResponse({ type: [ColorBasicDto] })
   findAll(@Param('store_id') store_id: string) {
     return this.colorService.findAll(+store_id);
   }
@@ -47,7 +47,7 @@ export class ColorController {
   @Get(':id/:store_id')
   @ApiParam({ name: 'id', type: Number, description: 'Color ID' })
   @ApiParam({ name: 'store_id', type: Number, description: 'Store ID' })
-  @ApiOkResponse({ type: ColorResponseDto })
+  @ApiOkResponse({ type: ColorBasicDto })
   findOne(@Param('id') id: string, @Param('store_id') store_id: string) {
     return this.colorService.findOne(+id, +store_id);
   }
@@ -55,7 +55,7 @@ export class ColorController {
   @Patch(':id/:store_id')
   @ApiParam({ name: 'id', type: Number, description: 'Color ID' })
   @ApiParam({ name: 'store_id', type: Number, description: 'Store ID' })
-  @ApiOkResponse({ type: ColorResponseDto })
+  @ApiOkResponse({ type: ColorBasicDto })
   update(
     @CurrentUser('id') user_id: number,
     @Param('id') id: string,
@@ -68,7 +68,7 @@ export class ColorController {
   @Delete(':id/:store_id')
   @ApiParam({ name: 'id', type: Number, description: 'Color ID' })
   @ApiParam({ name: 'store_id', type: Number, description: 'Store ID' })
-  @ApiOkResponse({ type: ColorResponseDto })
+  @ApiOkResponse({ type: ColorBasicDto })
   remove(@Param('id') id: string, @Param('store_id') store_id: string) {
     return this.colorService.remove(+id, +store_id);
   }

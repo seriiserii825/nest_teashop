@@ -34,8 +34,8 @@ export class ColorBasicDto {
   updatedAt: Date;
 }
 
-export class CreateColorBasicDto extends PickType(ColorBasicDto, [
+export class CreateColorDto extends PickType(ColorBasicDto, [
   'name',
   'value',
 ]) {}
-export class UpdateColorBasicDto extends PartialType(CreateColorBasicDto) {}
+export class UpdateColorDto extends PartialType(CreateColorDto) {}

@@ -1,0 +1,3 @@
+response type
+color
+product

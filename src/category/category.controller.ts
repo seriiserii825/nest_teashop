@@ -15,10 +15,7 @@ import {
 } from '@nestjs/swagger';
 import { CurrentUser } from 'src/user/decorators/user.decorator';
 import { CategoryService } from './category.service';
-import {
-  CategoryResponseDto,
-  CreateCategoryDto,
-} from './dto/create-category.dto';
+import { CategoryBasicDto, CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Controller('categories')
@@ -28,7 +25,7 @@ export class CategoryController {
   @Post(':store_id')
   @ApiParam({ name: 'store_id', type: 'string' })
   @ApiBody({ type: CreateCategoryDto })
-  @ApiCreatedResponse({ type: CategoryResponseDto })
+  @ApiCreatedResponse({ type: CategoryBasicDto })
   create(
     @CurrentUser('id') user_id: number,
     @Body() createCategoryDto: CreateCategoryDto,
@@ -39,7 +36,7 @@ export class CategoryController {
 
   @Get(':store_id')
   @ApiParam({ name: 'store_id', type: 'string' })
-  @ApiOkResponse({ type: [CategoryResponseDto] })
+  @ApiOkResponse({ type: [CategoryBasicDto] })
   findAll(@Param('store_id') store_id: string) {
     return this.categoryService.findAll(+store_id);
   }
@@ -47,7 +44,7 @@ export class CategoryController {
   @Get(':id/:store_id')
   @ApiParam({ name: 'id', type: 'string' })
   @ApiParam({ name: 'store_id', type: 'string' })
-  @ApiOkResponse({ type: CategoryResponseDto })
+  @ApiOkResponse({ type: CategoryBasicDto })
   findOne(@Param('id') id: string, @Param('store_id') store_id: string) {
     return this.categoryService.findOne(+id, +store_id);
   }
@@ -56,7 +53,7 @@ export class CategoryController {
   @ApiParam({ name: 'id', type: 'string' })
   @ApiParam({ name: 'store_id', type: 'string' })
   @ApiBody({ type: UpdateCategoryDto })
-  @ApiOkResponse({ type: CategoryResponseDto })
+  @ApiOkResponse({ type: CategoryBasicDto })
   update(
     @Param('id') id: string,
     @Param('store_id') store_id: string,
@@ -68,7 +65,7 @@ export class CategoryController {
   @Delete(':id/:store_id')
   @ApiParam({ name: 'id', type: 'string' })
   @ApiParam({ name: 'store_id', type: 'string' })
-  @ApiOkResponse({ type: CategoryResponseDto })
+  @ApiOkResponse({ type: CategoryBasicDto })
   remove(@Param('id') id: string, @Param('store_id') store_id: string) {
     return this.categoryService.remove(+id, +store_id);
   }

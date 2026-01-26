@@ -4,10 +4,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { StoreService } from 'src/store/store.service';
 import { Not, Repository } from 'typeorm';
 import { CreateColorDto, UpdateColorDto } from './dto/create-color.dto';
 import { Color } from './entities/color.entity';
-import { StoreService } from 'src/store/store.service';
 
 @Injectable()
 export class ColorService {
