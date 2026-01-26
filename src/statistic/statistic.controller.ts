@@ -20,4 +20,9 @@ export class StatisticController {
   async getMainStatistics(@Param('store_id') store_id: string) {
     return this.statisticService.getMainStatistics(+store_id);
   }
+
+  @Get('middle/store/:store_id')
+  async getMiddleStatistics(@Param('store_id') store_id: string) {
+    return this.statisticService.getMiddleStatistics(+store_id);
+  }
 }

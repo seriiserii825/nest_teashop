@@ -123,12 +123,12 @@ export class StatisticService {
     const lastUsers = await this.userRepository
       .createQueryBuilder('user')
       .innerJoin('user.orders', 'order')
-      .innerJoin('order.orderItems', 'item', 'item.store_id = :store_id', {
+      .innerJoin('order.items', 'item', 'item.store_id = :store_id', {
         store_id,
       })
       .leftJoinAndSelect('user.orders', 'userOrders')
       .leftJoinAndSelect(
-        'userOrders.orderItems',
+        'userOrders.items',
         'orderItem',
         'orderItem.store_id = :store_id',
         { store_id },
