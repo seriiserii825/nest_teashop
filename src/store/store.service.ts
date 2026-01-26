@@ -32,23 +32,22 @@ export class StoreService {
     return transformStoreToDto(newStore);
   }
 
-  findAll(user_id: number): Promise<StoreResponseDto[]> {
-    return this.storeRepository.find({
+  async findAll(user_id: number): Promise<StoreResponseDto[]> {
+    const stores = await this.storeRepository.find({
       where: { user_id },
       order: { updatedAt: 'DESC' },
     });
+    return stores.map(transformStoreToDto);
   }
 
-  async findOne(id: number, user_id: number): Promise<StoreResponseDto> {
+  async findOne(id: number, user_id: number): Promise<Store> {
     const store = await this.storeRepository.findOne({
       where: { id, user_id },
     });
     if (!store) {
       throw new NotFoundException(`Store with ID ${id} not found`);
     }
-    return {
-      ...store,
-    };
+    return store;
   }
 
   async update(
@@ -77,7 +76,7 @@ export class StoreService {
 
     // Save and return the updated store
     const updatedStore = await this.storeRepository.save(store);
-    return updatedStore;
+    return transformStoreToDto(updatedStore);
   }
 
   async remove(id: number, user_id: number): Promise<StoreRemoveResponseDto> {

@@ -54,7 +54,7 @@ export class StoreResponseDto {
   @ApiPropertyOptional({ type: [ReviewResponseDto] })
   @Type(() => ReviewResponseDto)
   @IsOptional()
-  colors?: ReviewResponseDto[];
+  reviews?: ReviewResponseDto[];
 
   @ApiPropertyOptional({ type: [OrderItemsResponseDto] })
   @Type(() => OrderItemsResponseDto)

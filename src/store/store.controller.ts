@@ -11,7 +11,6 @@ import { ApiBody, ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
 import { AuthJwt } from 'src/auth/decorators/auth.jwt.decorator';
 import { CurrentUser } from 'src/user/decorators/user.decorator';
 import { User } from 'src/user/entities/user.entity';
-import { transformStoreToDto } from 'src/utils/transform-store';
 import {
   CreateStoreDto,
   StoreRemoveResponseDto,
@@ -19,6 +18,7 @@ import {
   UpdateStoreDto,
 } from './dto/store.dto';
 import { StoreService } from './store.service';
+import { Store } from './entities/store.entity';
 
 @AuthJwt()
 @Controller('stores')
@@ -44,10 +44,7 @@ export class StoreController {
 
   @Get(':id')
   @ApiOkResponse({ type: StoreResponseDto })
-  findOne(
-    @CurrentUser() user: User,
-    @Param('id') id: string,
-  ): Promise<StoreResponseDto> {
+  findOne(@CurrentUser() user: User, @Param('id') id: string): Promise<Store> {
     return this.storeService.findOne(+id, user.id);
   }
 
