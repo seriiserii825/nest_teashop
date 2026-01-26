@@ -37,7 +37,7 @@ import { ProductService } from './product.service';
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
-  @Post('store/:storeId')
+  @Post('store/:store_id')
   @ApiBody({ type: CreateProductDto })
   @ApiConflictResponse({
     description: 'Product with this title already exists in the store',
@@ -48,57 +48,53 @@ export class ProductController {
   create(
     @CurrentUser('id') user_id: number,
     @Body() createProductDto: CreateProductDto,
-    @Param('storeId') storeId: string,
+    @Param('store_id') store_id: string,
     @UploadedFiles() files: Express.Multer.File[],
   ) {
     return this.productService.create(
-      +storeId,
+      +store_id,
       createProductDto,
       files,
       user_id,
     );
   }
 
-  @Patch(':id')
+  @Patch(':id/store/:store_id')
   @ApiParam({ name: 'id', description: 'Product ID' })
+  @ApiParam({ name: 'store_id', description: 'Store ID' })
   @ApiBody({ type: UpdateProductDto })
   @UseInterceptors(FilesInterceptor('images', 10)) // максимум 10 файлов
   @ApiConsumes('multipart/form-data')
   @ApiOkResponse({ type: ProductBasicDto })
   update(
     @Param('id') id: string,
+    @Param('store_id') store_id: string,
     @Body() updateProductDto: UpdateProductDto,
     @UploadedFiles() files: Express.Multer.File[],
   ) {
-    return this.productService.update(+id, updateProductDto, files);
+    return this.productService.update(+id, +store_id, updateProductDto, files);
   }
 
-  @Get()
+  @Get('store/:store_id')
   @ApiOkResponse({ type: ProductFullDto })
   findAll(@Query() query: QueryProductDto) {
     return this.productService.findAll(query);
   }
 
-  @Get('store/:storeId')
-  @ApiOkResponse({ type: ProductFullDto })
-  @ApiBody({ type: QueryProductDto })
-  findAllByStoreID(
-    @Param('storeId') storeId: string,
-    @Query() query: QueryProductDto,
-  ) {
-    return this.productService.findAllByStoreID(storeId, query);
-  }
-
-  @Get(':id')
+  @Get(':id/store/:store_id')
+  @ApiParam({ name: 'id', description: 'Product ID' })
+  @ApiParam({ name: 'store_id', description: 'Store ID' })
   @ApiNotFoundResponse({ description: 'Product not found' })
   @ApiOkResponse({ type: ProductBasicDto })
-  findById(@Param('id') id: string) {
-    return this.productService.findById(+id);
+  findOne(@Param('id') id: string, @Param('store_id') store_id: string) {
+    return this.productService.findOne(+id, +store_id);
   }
 
-  @Delete(':id')
+  @Delete(':id/store/:store_id')
+  @ApiParam({ name: 'id', description: 'Product ID' })
+  @ApiParam({ name: 'store_id', description: 'Store ID' })
   @ApiNotFoundResponse({ description: 'Product not found' })
-  remove(@Param('id') id: string) {
-    return this.productService.remove(+id);
+  remove(@Param('id') id: string, @Param('store_id') store_id: string) {
+    return this.productService.remove(+id, +store_id);
   }
 }

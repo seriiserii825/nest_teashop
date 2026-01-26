@@ -57,10 +57,11 @@ export class ProductService {
 
   async update(
     id: number,
+    store_id: number,
     updateProductDto: UpdateProductDto,
     files?: Express.Multer.File[],
   ) {
-    const product = await this.findById(id);
+    const product = await this.findOne(id, store_id);
 
     // Проверка на дубликат названия
     if (
@@ -108,8 +109,8 @@ export class ProductService {
     });
   }
 
-  async remove(id: number) {
-    const product = await this.findById(id);
+  async remove(id: number, store_id: number) {
+    const product = await this.findOne(id, store_id);
 
     // Удаляем все изображения продукта
     if (product.images.length > 0) {
@@ -234,31 +235,9 @@ export class ProductService {
     return this.buildPaginatedResponse(products, total, page, limit);
   }
 
-  async findAllByStoreID(store_id: string, query: QueryProductDto) {
-    const { page = 1, limit = 10, search, sortKey, sortOrder = 'desc' } = query;
-    await new Promise((resolve) => setTimeout(resolve, 600));
-
-    const queryBuilder = this.buildProductQuery(search, sortKey, sortOrder);
-    queryBuilder.andWhere('product.store_id = :store_id', { store_id });
-
-    const [products, total] = await queryBuilder
-      .skip((page - 1) * limit)
-      .take(limit)
-      .getManyAndCount();
-
-    return this.buildPaginatedResponse(products, total, page, limit);
-  }
-
-  async findAllByCategoryID(category_id: number) {
-    return this.productRepository.find({
-      where: { category_id },
-      order: { updatedAt: 'DESC' },
-    });
-  }
-
-  async findById(id: number) {
+  async findOne(id: number, store_id: number) {
     const product = await this.productRepository.findOne({
-      where: { id },
+      where: { id, store_id },
     });
 
     if (!product) {
