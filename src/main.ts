@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import validationConfig from './config/validation.confit';
+import validationConfig from './config/validation.config';
 import swaggerConfig from './config/swagger.config';
 
 import cookieParser from 'cookie-parser';

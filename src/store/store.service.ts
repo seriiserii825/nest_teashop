@@ -19,7 +19,10 @@ export class StoreService {
   constructor(
     @InjectRepository(Store) private storeRepository: Repository<Store>,
   ) {}
-  async create(createStoreDto: CreateStoreDto, user_id: number) {
+  async create(
+    createStoreDto: CreateStoreDto,
+    user_id: number,
+  ): Promise<StoreResponseDto> {
     await this.checkStoreByTitle(createStoreDto.title, user_id);
     const newStore = this.storeRepository.create({
       title: createStoreDto.title,
@@ -29,24 +32,30 @@ export class StoreService {
     return transformStoreToDto(newStore);
   }
 
-  findAll(user_id: number) {
+  findAll(user_id: number): Promise<StoreResponseDto[]> {
     return this.storeRepository.find({
       where: { user_id },
       order: { updatedAt: 'DESC' },
     });
   }
 
-  async findOne(id: number, user_id: number): Promise<Store> {
+  async findOne(id: number, user_id: number): Promise<StoreResponseDto> {
     const store = await this.storeRepository.findOne({
       where: { id, user_id },
     });
     if (!store) {
       throw new NotFoundException(`Store with ID ${id} not found`);
     }
-    return store;
+    return {
+      ...store,
+    };
   }
 
-  async update(id: number, updateStoreDto: UpdateStoreDto, user_id: number) {
+  async update(
+    id: number,
+    updateStoreDto: UpdateStoreDto,
+    user_id: number,
+  ): Promise<StoreResponseDto> {
     // Check if there are fields to update
     if (Object.keys(updateStoreDto).length === 0) {
       throw new BadRequestException('No fields to update');

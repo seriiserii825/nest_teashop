@@ -4,8 +4,8 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
-  Put,
 } from '@nestjs/common';
 import { ApiBody, ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
 import { AuthJwt } from 'src/auth/decorators/auth.jwt.decorator';
@@ -28,7 +28,10 @@ export class StoreController {
   @Post()
   @ApiBody({ type: CreateStoreDto })
   @ApiCreatedResponse({ type: StoreResponseDto })
-  create(@CurrentUser() user: User, @Body() input: CreateStoreDto) {
+  create(
+    @CurrentUser() user: User,
+    @Body() input: CreateStoreDto,
+  ): Promise<StoreResponseDto> {
     return this.storeService.create(input, +user.id);
   }
 
@@ -36,18 +39,19 @@ export class StoreController {
   @ApiOkResponse({ type: [StoreResponseDto] })
   async findAll(@CurrentUser('id') id: number): Promise<StoreResponseDto[]> {
     const stores = await this.storeService.findAll(id);
-    return stores.map((store) => {
-      return transformStoreToDto(store);
-    });
+    return stores;
   }
 
   @Get(':id')
   @ApiOkResponse({ type: StoreResponseDto })
-  findOne(@CurrentUser() user: User, @Param('id') id: string) {
+  findOne(
+    @CurrentUser() user: User,
+    @Param('id') id: string,
+  ): Promise<StoreResponseDto> {
     return this.storeService.findOne(+id, user.id);
   }
 
-  @Put(':id')
+  @Patch(':id')
   @ApiBody({ type: UpdateStoreDto })
   @ApiOkResponse({ type: StoreResponseDto })
   update(
