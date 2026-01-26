@@ -1,16 +1,9 @@
-import { ApiProperty, PickType } from '@nestjs/swagger';
-import { IsArray, IsDate, IsNumber, IsString } from 'class-validator';
-import { Product } from 'src/product/entities/product.entity';
-import { Store } from 'src/store/entities/store.entity';
-import {
-  Column,
-  CreateDateColumn,
-  ManyToOne,
-  OneToMany,
-  UpdateDateColumn,
-} from 'typeorm';
+import { ApiProperty, ApiPropertyOptional, PickType } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsDate, IsNumber, IsOptional, IsString } from 'class-validator';
+import { ProductBasicDto } from 'src/product/dto/create-product.dto';
 
-class Category {
+export class CategoryBasicDto {
   @ApiProperty({
     example: 1,
     description: 'The unique identifier of the category',
@@ -31,12 +24,6 @@ class Category {
   })
   @IsString()
   description: string;
-
-  @IsArray()
-  products: Product[];
-
-  @IsArray()
-  store: Store;
 
   @ApiProperty({
     example: 1,
@@ -60,9 +47,14 @@ class Category {
   updatedAt: Date;
 }
 
-export class CreateCategoryDto extends PickType(Category, [
+export class CreateCategoryBasicDto extends PickType(CategoryBasicDto, [
   'title',
   'description',
 ]) {}
 
-export class CategoryResponseDto extends Category {}
+export class CategoryFullDto extends CategoryBasicDto {
+  @ApiPropertyOptional({ type: [ProductBasicDto] })
+  @Type(() => ProductBasicDto)
+  @IsOptional()
+  products?: ProductBasicDto[];
+}

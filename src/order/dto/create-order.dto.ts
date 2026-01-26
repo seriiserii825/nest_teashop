@@ -1,3 +1,3 @@
 export class CreateOrderDto {}
 
-export class OrderItemsResponseDto {}
+export class OrderBasicDto {}

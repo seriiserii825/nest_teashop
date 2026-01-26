@@ -1,7 +1,7 @@
 import { ApiProperty, PartialType, PickType } from '@nestjs/swagger';
 import { IsDate, IsNumber, IsString, Matches } from 'class-validator';
 
-class Color {
+export class ColorBasicDto {
   @ApiProperty({ example: 1, description: 'Color ID' })
   @IsNumber()
   id: number;
@@ -34,7 +34,8 @@ class Color {
   updatedAt: Date;
 }
 
-export class CreateColorDto extends PickType(Color, ['name', 'value']) {}
-export class UpdateColorDto extends PartialType(CreateColorDto) {}
-
-export class ColorResponseDto extends Color {}
+export class CreateColorBasicDto extends PickType(ColorBasicDto, [
+  'name',
+  'value',
+]) {}
+export class UpdateColorBasicDto extends PartialType(CreateColorBasicDto) {}

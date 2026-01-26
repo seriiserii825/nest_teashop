@@ -1,65 +1,37 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  ApiProperty,
+  ApiPropertyOptional,
+  PartialType,
+  PickType,
+} from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
-import { CategoryResponseDto } from 'src/category/dto/create-category.dto';
-import { OrderItemsResponseDto } from 'src/order/dto/create-order.dto';
-import { ProductResponseDto } from 'src/product/dto/create-product.dto';
-import { ReviewResponseDto } from 'src/review/dto/create-review.dto';
+import { CategoryBasicDto } from 'src/category/dto/create-category.dto';
+import { OrderItemsBasicDto } from 'src/order-item/dto/create-order-item.dto';
+import { ProductBasicDto } from 'src/product/dto/create-product.dto';
+import { ReviewBasicDto } from 'src/review/dto/create-review.dto';
 
-export class CreateStoreDto {
+export class StoreBasicDto {
+  @ApiProperty({ minLength: 2 })
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(2)
+  id: number;
+
   @ApiProperty({ minLength: 2 })
   @IsString()
   @IsNotEmpty()
   @MinLength(2)
   title: string;
-}
-
-export class UpdateStoreDto {
-  @ApiPropertyOptional({ minLength: 2 })
-  @IsOptional()
-  @IsString()
-  @MinLength(2)
-  title?: string;
 
   @ApiPropertyOptional({ minLength: 10 })
   @IsOptional()
   @IsString()
   @MinLength(10)
   description?: string;
-}
-
-export class StoreResponseDto {
-  @ApiProperty()
-  id: number;
-
-  @ApiProperty()
-  title: string;
-
-  @ApiPropertyOptional()
-  description?: string;
 
   @ApiProperty()
   user_id: number;
-
-  @ApiPropertyOptional({ type: [ProductResponseDto] })
-  @Type(() => ProductResponseDto)
-  @IsOptional()
-  products?: ProductResponseDto[];
-
-  @ApiPropertyOptional({ type: [CategoryResponseDto] })
-  @Type(() => CategoryResponseDto)
-  @IsOptional()
-  categories?: CategoryResponseDto[];
-
-  @ApiPropertyOptional({ type: [ReviewResponseDto] })
-  @Type(() => ReviewResponseDto)
-  @IsOptional()
-  reviews?: ReviewResponseDto[];
-
-  @ApiPropertyOptional({ type: [OrderItemsResponseDto] })
-  @Type(() => OrderItemsResponseDto)
-  @IsOptional()
-  order_items?: OrderItemsResponseDto[];
 
   @ApiProperty()
   createdAt: Date;
@@ -68,7 +40,34 @@ export class StoreResponseDto {
   updatedAt: Date;
 }
 
-export class StoreRemoveResponseDto {
+export class StoreFullDto extends StoreBasicDto {
+  @ApiPropertyOptional({ type: [ProductBasicDto] })
+  @Type(() => ProductBasicDto)
+  @IsOptional()
+  products?: ProductBasicDto[];
+
+  @ApiPropertyOptional({ type: [CategoryBasicDto] })
+  @Type(() => CategoryBasicDto)
+  @IsOptional()
+  categories?: CategoryBasicDto[];
+
+  @ApiPropertyOptional({ type: [ReviewBasicDto] })
+  @Type(() => ReviewBasicDto)
+  @IsOptional()
+  reviews?: ReviewBasicDto[];
+
+  @ApiPropertyOptional({ type: [OrderItemsBasicDto] })
+  @Type(() => OrderItemsBasicDto)
+  @IsOptional()
+  order_items?: OrderItemsBasicDto[];
+}
+
+export class StoreRemove {
   @ApiProperty({ example: 'Store with id 4 removed successfully' })
   message: string;
 }
+
+export class CreateStoreDto extends PickType(StoreBasicDto, ['title']) {}
+export class UpdateStoreDto extends PartialType(
+  PickType(StoreBasicDto, ['title', 'description']),
+) {}

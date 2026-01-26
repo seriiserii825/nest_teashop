@@ -9,14 +9,10 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { CategoryResponseDto } from 'src/category/dto/create-category.dto';
-import { ColorResponseDto } from 'src/color/dto/create-color.dto';
-import { OrderItem } from 'src/order-item/entities/order-item.entity';
-import { Review } from 'src/review/entities/review.entity';
-import { StoreResponseDto } from 'src/store/dto/store.dto';
-import { User } from 'src/user/entities/user.entity';
+import { OrderItemsBasicDto } from 'src/order-item/dto/create-order-item.dto';
+import { ReviewBasicDto } from 'src/review/dto/create-review.dto';
 
-class Product {
+export class ProductBasicDto {
   @ApiProperty({ example: 1, description: 'Product ID' })
   @IsNumber()
   id: number;
@@ -55,7 +51,7 @@ class Product {
   @IsNumber()
   category_id: number;
 
-  @ApiProperty({ example: 3, description: 'Color ID' })
+  @ApiProperty({ example: 3, description: 'ColorBasic ID' })
   @IsNumber()
   color_id: number;
 
@@ -78,7 +74,7 @@ class Product {
   updatedAt: Date;
 }
 
-export class CreateProductDto extends PickType(Product, [
+export class CreateProductDto extends PickType(ProductBasicDto, [
   'title',
   'description',
   'price',
@@ -95,60 +91,28 @@ export class CreateProductDto extends PickType(Product, [
   images?: any[];
 }
 
-export class ProductResponseDto extends Product {
+export class ProductFullDto extends ProductBasicDto {
   @ApiProperty({
-    type: () => StoreResponseDto,
-    description: 'Store information',
-  })
-  @ValidateNested()
-  @Type(() => StoreResponseDto)
-  store: StoreResponseDto;
-
-  @ApiProperty({
-    type: () => CategoryResponseDto,
-    description: 'Category information',
-  })
-  @ValidateNested()
-  @Type(() => CategoryResponseDto)
-  category: CategoryResponseDto;
-
-  @ApiProperty({
-    type: () => ColorResponseDto,
-    description: 'Color information',
-  })
-  @ValidateNested()
-  @Type(() => ColorResponseDto)
-  color: ColorResponseDto;
-
-  @ApiProperty({
-    type: () => User,
-    description: 'User who created the product',
-  })
-  @ValidateNested()
-  @Type(() => User)
-  user: User;
-
-  @ApiProperty({
-    type: () => [Review],
+    type: () => [ReviewBasicDto],
     description: 'Product reviews',
     required: false,
   })
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => Review)
+  @Type(() => ReviewBasicDto)
   @IsOptional()
-  reviews?: Review[];
+  reviews?: ReviewBasicDto[];
 
   @ApiProperty({
-    type: () => [OrderItem],
+    type: () => [OrderItemsBasicDto],
     description: 'Order items',
     required: false,
   })
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => OrderItem)
+  @Type(() => OrderItemsBasicDto)
   @IsOptional()
-  order_items?: OrderItem[];
+  order_items?: OrderItemsBasicDto[];
 }
 
 class PaginationMetaDto {
@@ -169,12 +133,12 @@ class PaginationMetaDto {
   totalPages: number;
 }
 
-export class AllProductsResponseDto {
-  @ApiProperty({ type: [ProductResponseDto], description: 'Array of products' })
+export class AllProductsDto {
+  @ApiProperty({ type: [ProductBasicDto], description: 'Array of products' })
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => ProductResponseDto)
-  data: ProductResponseDto[];
+  @Type(() => ProductBasicDto)
+  data: ProductBasicDto[];
 
   @ApiProperty({ type: PaginationMetaDto, description: 'Pagination metadata' })
   @ValidateNested()
