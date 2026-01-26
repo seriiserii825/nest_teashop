@@ -27,15 +27,15 @@ export class OrderController {
   }
 
   @Get()
-  @ApiOkResponse(ordersResponse)
+  @ApiOkResponse({ type: [OrderBasicDto] })
   findAll() {
     return this.orderService.findAll();
   }
 
   @Get(':id')
   @ApiNotFoundResponse({ description: 'Order not found' })
-  @ApiOkResponse(orderResponse)
+  @ApiOkResponse({ type: OrderBasicDto })
   findOne(@Param('id') id: string) {
-    return this.orderService.findOne(id);
+    return this.orderService.findOne(+id);
   }
 }

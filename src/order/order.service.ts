@@ -40,7 +40,7 @@ export class OrderService {
     return this.orderRepository.find({ relations: ['orderItems'] });
   }
 
-  async findOne(id: string) {
+  async findOne(id: number) {
     const order = await this.orderRepository.findOne({
       where: { id: id },
       relations: ['orderItems'],
