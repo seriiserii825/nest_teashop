@@ -1,34 +1,84 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ReviewService } from './review.service';
-import { CreateReviewDto } from './dto/create-review.dto';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
+import {
+  ApiBody,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiParam,
+} from '@nestjs/swagger';
+import { AuthJwt } from 'src/auth/decorators/auth.jwt.decorator';
+import { CurrentUser } from 'src/user/decorators/user.decorator';
+import { CreateReviewDto, ReviewBasicDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
+import { ReviewService } from './review.service';
 
+@AuthJwt()
 @Controller('review')
 export class ReviewController {
   constructor(private readonly reviewService: ReviewService) {}
 
-  @Post()
-  create(@Body() createReviewDto: CreateReviewDto) {
-    return this.reviewService.create(createReviewDto);
+  @Post('store/:store_id/product/:product_id')
+  @ApiBody({ type: CreateReviewDto })
+  @ApiParam({ name: 'store_id', type: Number })
+  @ApiParam({ name: 'product_id', type: Number })
+  @ApiCreatedResponse({ type: ReviewBasicDto })
+  create(
+    @CurrentUser('id') user_id: number,
+    @Param('store_id') store_id: number,
+    @Param('product_id') product_id: number,
+    @Body() createReviewDto: CreateReviewDto,
+  ): Promise<ReviewBasicDto> {
+    return this.reviewService.create(
+      createReviewDto,
+      +store_id,
+      +user_id,
+      +product_id,
+    );
   }
 
-  @Get()
-  findAll() {
-    return this.reviewService.findAll();
+  @Get('store/:store_id')
+  @ApiParam({ name: 'store_id', type: Number })
+  @ApiOkResponse({ type: [ReviewBasicDto] })
+  findAll(
+    @CurrentUser('id') user_id: number,
+    @Param('store_id') store_id: string,
+  ) {
+    return this.reviewService.findAll(+store_id, +user_id);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.reviewService.findOne(+id);
+  @Get(':id/store/:store_id')
+  @ApiParam({ name: 'id', type: Number })
+  @ApiParam({ name: 'store_id', type: Number })
+  @ApiOkResponse({ type: ReviewBasicDto })
+  findOne(@Param('id') id: string, @Param('store_id') store_id: string) {
+    return this.reviewService.findOne(+id, +store_id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateReviewDto: UpdateReviewDto) {
-    return this.reviewService.update(+id, updateReviewDto);
+  @Patch(':id/store/:store_id')
+  @ApiParam({ name: 'id', type: Number })
+  @ApiParam({ name: 'store_id', type: Number })
+  @ApiBody({ type: UpdateReviewDto })
+  @ApiOkResponse({ type: ReviewBasicDto })
+  update(
+    @Param('id') id: string,
+    @Param('store_id') store_id: string,
+    @Body() updateReviewDto: UpdateReviewDto,
+  ): Promise<ReviewBasicDto> {
+    return this.reviewService.update(+id, +store_id, updateReviewDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.reviewService.remove(+id);
+  @Delete(':id/store/:store_id')
+  @ApiParam({ name: 'id', type: Number })
+  @ApiParam({ name: 'store_id', type: Number })
+  @ApiOkResponse({ type: ReviewBasicDto })
+  remove(@Param('id') id: string, @Param('store_id') store_id: string) {
+    return this.reviewService.remove(+id, +store_id);
   }
 }
