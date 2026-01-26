@@ -12,6 +12,7 @@ import { OrderModule } from './order/order.module';
 import { OrderItemModule } from './order-item/order-item.module';
 import { AuthModule } from './auth/auth.module';
 import { FileModule } from './file/file.module';
+import { StatisticModule } from './statistic/statistic.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { FileModule } from './file/file.module';
     OrderItemModule,
     AuthModule,
     FileModule,
+    StatisticModule,
   ],
 })
 export class AppModule {}
