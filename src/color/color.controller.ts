@@ -33,14 +33,14 @@ export class ColorController {
     @CurrentUser('id') user_id: number,
     @Body() createColorDto: CreateColorDto,
     @Param('store_id') store_id: number,
-  ) {
+  ): Promise<ColorBasicDto> {
     return this.colorService.create(createColorDto, store_id, user_id);
   }
 
   @Get(':store_id')
   @ApiParam({ name: 'store_id', type: Number, description: 'Store ID' })
   @ApiOkResponse({ type: [ColorBasicDto] })
-  findAll(@Param('store_id') store_id: string) {
+  findAll(@Param('store_id') store_id: string): Promise<ColorBasicDto[]> {
     return this.colorService.findAll(+store_id);
   }
 
@@ -48,7 +48,10 @@ export class ColorController {
   @ApiParam({ name: 'id', type: Number, description: 'Color ID' })
   @ApiParam({ name: 'store_id', type: Number, description: 'Store ID' })
   @ApiOkResponse({ type: ColorBasicDto })
-  findOne(@Param('id') id: string, @Param('store_id') store_id: string) {
+  findOne(
+    @Param('id') id: string,
+    @Param('store_id') store_id: string,
+  ): Promise<ColorBasicDto> {
     return this.colorService.findOne(+id, +store_id);
   }
 
@@ -61,7 +64,7 @@ export class ColorController {
     @Param('id') id: string,
     @Param('store_id') store_id: string,
     @Body() updateColorDto: UpdateColorDto,
-  ) {
+  ): Promise<ColorBasicDto> {
     return this.colorService.update(+id, +store_id, updateColorDto, user_id);
   }
 
@@ -69,7 +72,10 @@ export class ColorController {
   @ApiParam({ name: 'id', type: Number, description: 'Color ID' })
   @ApiParam({ name: 'store_id', type: Number, description: 'Store ID' })
   @ApiOkResponse({ type: ColorBasicDto })
-  remove(@Param('id') id: string, @Param('store_id') store_id: string) {
+  remove(
+    @Param('id') id: string,
+    @Param('store_id') store_id: string,
+  ): Promise<ColorBasicDto> {
     return this.colorService.remove(+id, +store_id);
   }
 }

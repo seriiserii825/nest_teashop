@@ -6,7 +6,11 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { StoreService } from 'src/store/store.service';
 import { Not, Repository } from 'typeorm';
-import { CreateColorDto, UpdateColorDto } from './dto/create-color.dto';
+import {
+  ColorBasicDto,
+  CreateColorDto,
+  UpdateColorDto,
+} from './dto/create-color.dto';
 import { Color } from './entities/color.entity';
 
 @Injectable()
@@ -20,7 +24,7 @@ export class ColorService {
     createColorDto: CreateColorDto,
     store_id: number,
     user_id: number,
-  ) {
+  ): Promise<ColorBasicDto> {
     await this.storeService.findOne(store_id, user_id);
     await this.hasTheSameNameInStore(createColorDto.name, store_id);
     const color = this.colorRepository.create({
@@ -30,14 +34,14 @@ export class ColorService {
     return this.colorRepository.save(color);
   }
 
-  findAll(store_id: number) {
+  findAll(store_id: number): Promise<ColorBasicDto[]> {
     return this.colorRepository.find({
       where: { store_id },
       order: { updatedAt: 'DESC' },
     });
   }
 
-  async findOne(id: number, store_id: number) {
+  async findOne(id: number, store_id: number): Promise<Color> {
     const color = await this.colorRepository.findOne({
       where: { id, store_id },
     });
@@ -52,7 +56,7 @@ export class ColorService {
     store_id: number,
     updateColorDto: UpdateColorDto,
     user_id: number,
-  ) {
+  ): Promise<ColorBasicDto> {
     await this.storeService.findOne(store_id, user_id);
     if (updateColorDto.name) {
       await this.hasTheSameNameInStoreWithoutCurrent(
@@ -66,7 +70,7 @@ export class ColorService {
     return this.colorRepository.save(color);
   }
 
-  async remove(id: number, store_id: number) {
+  async remove(id: number, store_id: number): Promise<ColorBasicDto> {
     const color = await this.findOne(id, store_id);
     return this.colorRepository.remove(color);
   }
