@@ -13,12 +13,12 @@ import { CurrentUser } from 'src/user/decorators/user.decorator';
 import { User } from 'src/user/entities/user.entity';
 import {
   CreateStoreDto,
-  StoreRemoveResponseDto,
-  StoreResponseDto,
+  StoreBasicDto,
+  StoreRemoveDto,
   UpdateStoreDto,
 } from './dto/store.dto';
-import { StoreService } from './store.service';
 import { Store } from './entities/store.entity';
+import { StoreService } from './store.service';
 
 @AuthJwt()
 @Controller('stores')
@@ -27,44 +27,44 @@ export class StoreController {
 
   @Post()
   @ApiBody({ type: CreateStoreDto })
-  @ApiCreatedResponse({ type: StoreResponseDto })
+  @ApiCreatedResponse({ type: StoreBasicDto })
   create(
     @CurrentUser() user: User,
     @Body() input: CreateStoreDto,
-  ): Promise<StoreResponseDto> {
+  ): Promise<StoreBasicDto> {
     return this.storeService.create(input, +user.id);
   }
 
   @Get()
-  @ApiOkResponse({ type: [StoreResponseDto] })
-  async findAll(@CurrentUser('id') id: number): Promise<StoreResponseDto[]> {
+  @ApiOkResponse({ type: [StoreBasicDto] })
+  async findAll(@CurrentUser('id') id: number): Promise<StoreBasicDto[]> {
     const stores = await this.storeService.findAll(id);
     return stores;
   }
 
   @Get(':id')
-  @ApiOkResponse({ type: StoreResponseDto })
+  @ApiOkResponse({ type: StoreBasicDto })
   findOne(@CurrentUser() user: User, @Param('id') id: string): Promise<Store> {
     return this.storeService.findOne(+id, user.id);
   }
 
   @Patch(':id')
   @ApiBody({ type: UpdateStoreDto })
-  @ApiOkResponse({ type: StoreResponseDto })
+  @ApiOkResponse({ type: StoreBasicDto })
   update(
     @CurrentUser() user: User,
     @Param('id') id: string,
     @Body() updateStoreDto: UpdateStoreDto,
-  ): Promise<StoreResponseDto> {
+  ): Promise<StoreBasicDto> {
     return this.storeService.update(+id, updateStoreDto, user.id);
   }
 
   @Delete(':id')
-  @ApiOkResponse({ type: StoreRemoveResponseDto })
+  @ApiOkResponse({ type: StoreRemoveDto })
   remove(
     @CurrentUser() user: User,
     @Param('id') id: string,
-  ): Promise<StoreRemoveResponseDto> {
+  ): Promise<StoreRemoveDto> {
     return this.storeService.remove(+id, user.id);
   }
 }

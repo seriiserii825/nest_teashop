@@ -62,7 +62,7 @@ export class StoreFullDto extends StoreBasicDto {
   order_items?: OrderItemsBasicDto[];
 }
 
-export class StoreRemove {
+export class StoreRemoveDto {
   @ApiProperty({ example: 'Store with id 4 removed successfully' })
   message: string;
 }

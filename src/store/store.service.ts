@@ -5,11 +5,10 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
-import { transformStoreToDto } from '../utils/transform-store';
 import {
   CreateStoreDto,
-  StoreRemoveResponseDto,
-  StoreResponseDto,
+  StoreBasicDto,
+  StoreRemoveDto,
   UpdateStoreDto,
 } from './dto/store.dto';
 import { Store } from './entities/store.entity';
@@ -22,22 +21,22 @@ export class StoreService {
   async create(
     createStoreDto: CreateStoreDto,
     user_id: number,
-  ): Promise<StoreResponseDto> {
+  ): Promise<StoreBasicDto> {
     await this.checkStoreByTitle(createStoreDto.title, user_id);
     const newStore = this.storeRepository.create({
       title: createStoreDto.title,
       user_id,
     });
     await this.storeRepository.save(newStore);
-    return transformStoreToDto(newStore);
+    return newStore;
   }
 
-  async findAll(user_id: number): Promise<StoreResponseDto[]> {
+  async findAll(user_id: number): Promise<StoreBasicDto[]> {
     const stores = await this.storeRepository.find({
       where: { user_id },
       order: { updatedAt: 'DESC' },
     });
-    return stores.map(transformStoreToDto);
+    return stores;
   }
 
   async findOne(id: number, user_id: number): Promise<Store> {
@@ -54,7 +53,7 @@ export class StoreService {
     id: number,
     updateStoreDto: UpdateStoreDto,
     user_id: number,
-  ): Promise<StoreResponseDto> {
+  ): Promise<StoreBasicDto> {
     // Check if there are fields to update
     if (Object.keys(updateStoreDto).length === 0) {
       throw new BadRequestException('No fields to update');
@@ -76,10 +75,10 @@ export class StoreService {
 
     // Save and return the updated store
     const updatedStore = await this.storeRepository.save(store);
-    return transformStoreToDto(updatedStore);
+    return updatedStore;
   }
 
-  async remove(id: number, user_id: number): Promise<StoreRemoveResponseDto> {
+  async remove(id: number, user_id: number): Promise<StoreRemoveDto> {
     const store = await this.findOne(id, user_id);
     await this.storeRepository.remove(store);
     return { message: `Store with id ${id} removed successfully` };
