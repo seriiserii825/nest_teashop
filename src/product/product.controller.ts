@@ -21,15 +21,15 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { AuthJwt } from 'src/auth/decorators/auth.jwt.decorator';
+import { CurrentUser } from 'src/user/decorators/user.decorator';
 import {
-  AllProductsResponseDto,
   CreateProductDto,
-  ProductResponseDto,
+  ProductBasicDto,
+  ProductFullDto,
 } from './dto/create-product.dto';
 import { QueryProductDto } from './dto/query-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductService } from './product.service';
-import { CurrentUser } from 'src/user/decorators/user.decorator';
 
 @ApiUnauthorizedResponse({ description: 'Unauthorized' })
 @AuthJwt()
@@ -42,7 +42,7 @@ export class ProductController {
   @ApiConflictResponse({
     description: 'Product with this title already exists in the store',
   })
-  @ApiOkResponse({ type: ProductResponseDto })
+  @ApiOkResponse({ type: ProductBasicDto })
   @UseInterceptors(FilesInterceptor('images', 10)) // максимум 10 файлов
   @ApiConsumes('multipart/form-data')
   create(
@@ -64,7 +64,7 @@ export class ProductController {
   @ApiBody({ type: UpdateProductDto })
   @UseInterceptors(FilesInterceptor('images', 10)) // максимум 10 файлов
   @ApiConsumes('multipart/form-data')
-  @ApiOkResponse({ type: ProductResponseDto })
+  @ApiOkResponse({ type: ProductBasicDto })
   update(
     @Param('id') id: string,
     @Body() updateProductDto: UpdateProductDto,
@@ -74,13 +74,13 @@ export class ProductController {
   }
 
   @Get()
-  @ApiOkResponse({ type: AllProductsResponseDto })
+  @ApiOkResponse({ type: ProductFullDto })
   findAll(@Query() query: QueryProductDto) {
     return this.productService.findAll(query);
   }
 
   @Get('store/:storeId')
-  @ApiOkResponse({ type: AllProductsResponseDto })
+  @ApiOkResponse({ type: ProductFullDto })
   @ApiBody({ type: QueryProductDto })
   findAllByStoreID(
     @Param('storeId') storeId: string,
@@ -91,7 +91,7 @@ export class ProductController {
 
   @Get(':id')
   @ApiNotFoundResponse({ description: 'Product not found' })
-  @ApiOkResponse({ type: ProductResponseDto })
+  @ApiOkResponse({ type: ProductBasicDto })
   findById(@Param('id') id: string) {
     return this.productService.findById(+id);
   }
