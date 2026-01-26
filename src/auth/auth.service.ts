@@ -6,9 +6,8 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
-import { TCreateUserDto, TUserResponseDto } from 'src/user/dto/user.dto';
+import { CreateUserDto, UserBasicDto } from 'src/user/dto/user.dto';
 import { UserService } from 'src/user/user.service';
-import { transformUserToDto } from 'src/utils/transform-user';
 import { IJwtPayload } from './interfaces/IJwtPayload';
 import { ILoginResponse, ITokens } from './interfaces/ILoginResponse';
 
@@ -20,13 +19,13 @@ export class AuthService {
     private configService: ConfigService,
   ) {}
 
-  async login(dto: TCreateUserDto): Promise<ILoginResponse> {
+  async login(dto: CreateUserDto): Promise<ILoginResponse> {
     const user = await this.validateUser(dto);
     const tokens = this.issueTokens(user.id);
     return { user, tokens };
   }
 
-  async register(dto: TCreateUserDto): Promise<TUserResponseDto> {
+  async register(dto: CreateUserDto): Promise<UserBasicDto> {
     const user = await this.userService.create(dto);
     return user;
   }
@@ -82,10 +81,10 @@ export class AuthService {
     });
   }
 
-  private async validateUser(dto: TCreateUserDto): Promise<TUserResponseDto> {
+  private async validateUser(dto: CreateUserDto): Promise<UserBasicDto> {
     const user = await this.userService.findByEmail(dto.email);
     if (!user) throw new NotFoundException('User not found');
-    return transformUserToDto(user);
+    return user;
   }
 
   async validateOAuthLogin(req: {
@@ -103,6 +102,6 @@ export class AuthService {
       });
     }
     const tokens = this.issueTokens(user.id);
-    return { user: transformUserToDto(user), tokens };
+    return { user, tokens };
   }
 }

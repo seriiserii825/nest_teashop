@@ -12,7 +12,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { ApiCreatedResponse } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
-import { TCreateUserDto, TUserResponseDto } from 'src/user/dto/user.dto';
+import { CreateUserDto, UserBasicDto } from 'src/user/dto/user.dto';
 import { AuthService } from './auth.service';
 import { LoginResponseDto } from './dto/create-auth.dto';
 import { ILoginResponseWithoutRefresh } from './interfaces/ILoginResponse';
@@ -23,10 +23,10 @@ export class AuthController {
 
   @Post('register')
   @ApiCreatedResponse({
-    type: TUserResponseDto,
+    type: UserBasicDto,
     description: 'User successfully registered',
   })
-  create(@Body() input: TCreateUserDto): Promise<TUserResponseDto> {
+  create(@Body() input: CreateUserDto): Promise<UserBasicDto> {
     return this.authService.register(input);
   }
 
@@ -36,7 +36,7 @@ export class AuthController {
     description: 'User successfully logged in',
   })
   async login(
-    @Body() input: TCreateUserDto,
+    @Body() input: CreateUserDto,
     @Res({ passthrough: true }) res: Response,
   ): Promise<ILoginResponseWithoutRefresh> {
     const { tokens, ...user } = await this.authService.login(input);

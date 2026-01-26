@@ -1,4 +1,4 @@
-import { TUserResponseDto } from 'src/user/dto/user.dto';
+import { UserBasicDto } from 'src/user/dto/user.dto';
 
 export interface ITokens {
   accessToken: string;
@@ -6,11 +6,11 @@ export interface ITokens {
 }
 
 export interface ILoginResponse {
-  user: TUserResponseDto;
+  user: UserBasicDto;
   tokens: ITokens;
 }
 
 export interface ILoginResponseWithoutRefresh {
-  user: TUserResponseDto;
+  user: UserBasicDto;
   tokens: { accessToken: string };
 }
