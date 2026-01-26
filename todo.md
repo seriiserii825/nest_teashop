@@ -1,4 +1,2 @@
-response type
-color
-product
 category
+product

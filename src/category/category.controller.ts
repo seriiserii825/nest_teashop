@@ -30,14 +30,14 @@ export class CategoryController {
     @CurrentUser('id') user_id: number,
     @Body() createCategoryDto: CreateCategoryDto,
     @Param('store_id') store_id: string,
-  ) {
+  ): Promise<CategoryBasicDto> {
     return this.categoryService.create(createCategoryDto, +store_id, user_id);
   }
 
   @Get(':store_id')
   @ApiParam({ name: 'store_id', type: 'string' })
   @ApiOkResponse({ type: [CategoryBasicDto] })
-  findAll(@Param('store_id') store_id: string) {
+  findAll(@Param('store_id') store_id: string): Promise<CategoryBasicDto[]> {
     return this.categoryService.findAll(+store_id);
   }
 
@@ -45,7 +45,10 @@ export class CategoryController {
   @ApiParam({ name: 'id', type: 'string' })
   @ApiParam({ name: 'store_id', type: 'string' })
   @ApiOkResponse({ type: CategoryBasicDto })
-  findOne(@Param('id') id: string, @Param('store_id') store_id: string) {
+  findOne(
+    @Param('id') id: string,
+    @Param('store_id') store_id: string,
+  ): Promise<CategoryBasicDto> {
     return this.categoryService.findOne(+id, +store_id);
   }
 
@@ -58,7 +61,7 @@ export class CategoryController {
     @Param('id') id: string,
     @Param('store_id') store_id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
-  ) {
+  ): Promise<CategoryBasicDto> {
     return this.categoryService.update(+id, +store_id, updateCategoryDto);
   }
 
@@ -66,7 +69,10 @@ export class CategoryController {
   @ApiParam({ name: 'id', type: 'string' })
   @ApiParam({ name: 'store_id', type: 'string' })
   @ApiOkResponse({ type: CategoryBasicDto })
-  remove(@Param('id') id: string, @Param('store_id') store_id: string) {
+  remove(
+    @Param('id') id: string,
+    @Param('store_id') store_id: string,
+  ): Promise<CategoryBasicDto> {
     return this.categoryService.remove(+id, +store_id);
   }
 }

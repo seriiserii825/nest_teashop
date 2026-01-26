@@ -6,7 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { StoreService } from 'src/store/store.service';
 import { Not, Repository } from 'typeorm';
-import { CreateCategoryDto } from './dto/create-category.dto';
+import { CategoryBasicDto, CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { Category } from './entities/category.entity';
 
@@ -22,7 +22,7 @@ export class CategoryService {
     createCategoryDto: CreateCategoryDto,
     store_id: number,
     user_id: number,
-  ) {
+  ): Promise<CategoryBasicDto> {
     await this.storeService.findOne(store_id, user_id);
     await this.hasTheSameTitleInStore(createCategoryDto.title, store_id);
     const category = this.categoryRepository.create({
@@ -32,11 +32,11 @@ export class CategoryService {
     return this.categoryRepository.save(category);
   }
 
-  async findAll(store_id: number) {
+  async findAll(store_id: number): Promise<CategoryBasicDto[]> {
     return this.categoryRepository.find({ where: { store_id } });
   }
 
-  async findOne(id: number, store_id: number) {
+  async findOne(id: number, store_id: number): Promise<Category> {
     const category = await this.categoryRepository.findOne({
       where: { id, store_id },
     });
@@ -52,7 +52,7 @@ export class CategoryService {
     id: number,
     store_id: number,
     updateCategoryDto: UpdateCategoryDto,
-  ) {
+  ): Promise<CategoryBasicDto> {
     if (updateCategoryDto.title) {
       await this.hasTheSameTitleInStoreWithoutCurrent(
         updateCategoryDto.title,
@@ -65,7 +65,7 @@ export class CategoryService {
     return this.categoryRepository.save(category);
   }
 
-  async remove(id: number, store_id: number) {
+  async remove(id: number, store_id: number): Promise<CategoryBasicDto> {
     const category = await this.findOne(id, store_id);
     return this.categoryRepository.remove(category);
   }
