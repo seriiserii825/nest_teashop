@@ -19,7 +19,9 @@ import {
 } from './dto/store.dto';
 import { Store } from './entities/store.entity';
 import { StoreService } from './store.service';
+import { Admin } from 'src/auth/decorators/admin.decorator';
 
+@Admin()
 @AuthJwt()
 @Controller('stores')
 export class StoreController {

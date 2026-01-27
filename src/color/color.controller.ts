@@ -20,11 +20,15 @@ import {
   ApiParam,
 } from '@nestjs/swagger';
 import { CurrentUser } from 'src/user/decorators/user.decorator';
+import { Admin } from 'src/auth/decorators/admin.decorator';
+import { AuthJwt } from 'src/auth/decorators/auth.jwt.decorator';
 
 @Controller('colors')
 export class ColorController {
   constructor(private readonly colorService: ColorService) {}
 
+  @AuthJwt()
+  @Admin()
   @Post('store/:store_id')
   @ApiParam({ name: 'store_id', type: Number })
   @ApiBody({ type: CreateColorDto })
@@ -55,6 +59,8 @@ export class ColorController {
     return this.colorService.findOne(+id, +store_id);
   }
 
+  @AuthJwt()
+  @Admin()
   @Patch(':id/store/:store_id')
   @ApiParam({ name: 'id', type: Number, description: 'Color ID' })
   @ApiParam({ name: 'store_id', type: Number, description: 'Store ID' })
@@ -68,6 +74,8 @@ export class ColorController {
     return this.colorService.update(+id, +store_id, updateColorDto, user_id);
   }
 
+  @AuthJwt()
+  @Admin()
   @Delete(':id/store/:store_id')
   @ApiParam({ name: 'id', type: Number, description: 'Color ID' })
   @ApiParam({ name: 'store_id', type: Number, description: 'Store ID' })

@@ -18,12 +18,14 @@ import { CurrentUser } from 'src/user/decorators/user.decorator';
 import { CreateReviewDto, ReviewBasicDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { ReviewService } from './review.service';
+import { Admin } from 'src/auth/decorators/admin.decorator';
 
-@AuthJwt()
 @Controller('reviews')
 export class ReviewController {
   constructor(private readonly reviewService: ReviewService) {}
 
+  @Admin()
+  @AuthJwt()
   @Post('store/:store_id/product/:product_id')
   @ApiBody({ type: CreateReviewDto })
   @ApiParam({ name: 'store_id', type: Number })
@@ -61,6 +63,8 @@ export class ReviewController {
     return this.reviewService.findOne(+id, +store_id);
   }
 
+  @Admin()
+  @AuthJwt()
   @Patch(':id/store/:store_id')
   @ApiParam({ name: 'id', type: Number })
   @ApiParam({ name: 'store_id', type: Number })
@@ -74,6 +78,8 @@ export class ReviewController {
     return this.reviewService.update(+id, +store_id, updateReviewDto);
   }
 
+  @Admin()
+  @AuthJwt()
   @Delete(':id/store/:store_id')
   @ApiParam({ name: 'id', type: Number })
   @ApiParam({ name: 'store_id', type: Number })

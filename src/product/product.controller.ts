@@ -30,13 +30,15 @@ import {
 import { QueryProductDto } from './dto/query-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductService } from './product.service';
+import { Admin } from 'src/auth/decorators/admin.decorator';
 
 @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-@AuthJwt()
 @Controller('products')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
+  @Admin()
+  @AuthJwt()
   @Post('store/:store_id')
   @ApiBody({ type: CreateProductDto })
   @ApiConflictResponse({
@@ -59,6 +61,8 @@ export class ProductController {
     );
   }
 
+  @Admin()
+  @AuthJwt()
   @Patch(':id/store/:store_id')
   @ApiParam({ name: 'id', description: 'Product ID' })
   @ApiParam({ name: 'store_id', description: 'Store ID' })
@@ -90,6 +94,8 @@ export class ProductController {
     return this.productService.findOne(+id, +store_id);
   }
 
+  @Admin()
+  @AuthJwt()
   @Delete(':id/store/:store_id')
   @ApiParam({ name: 'id', description: 'Product ID' })
   @ApiParam({ name: 'store_id', description: 'Store ID' })

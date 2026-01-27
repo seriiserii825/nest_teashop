@@ -10,13 +10,15 @@ import { AuthJwt } from 'src/auth/decorators/auth.jwt.decorator';
 import { CurrentUser } from 'src/user/decorators/user.decorator';
 import { CreateOrderDto, OrderBasicDto } from './dto/create-order.dto';
 import { OrderService } from './order.service';
+import { Admin } from 'src/auth/decorators/admin.decorator';
 
 @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-@AuthJwt()
 @Controller('orders')
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
+  @AuthJwt()
+  @Admin()
   @Post('place')
   @ApiBody({ type: CreateOrderDto })
   @ApiOkResponse({ type: OrderBasicDto })
