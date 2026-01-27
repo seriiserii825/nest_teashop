@@ -2,6 +2,7 @@ import { ApiProperty, ApiPropertyOptional, PickType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsEmail,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -35,6 +36,11 @@ export class UserBasicDto {
   @ApiProperty({ example: 'http://example.com/profile.jpg' })
   @IsString()
   picture: string;
+
+  @ApiProperty({ example: 'user', description: 'Role of the user' })
+  @IsEnum(['user', 'admin'], { message: 'role must be either user or admin' })
+  @IsString()
+  role: string;
 
   @ApiProperty()
   createdAt: Date;

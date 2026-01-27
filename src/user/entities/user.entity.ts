@@ -10,6 +10,7 @@ import { Order } from '../../order/entities/order.entity';
 import { Product } from '../../product/entities/product.entity';
 import { Review } from '../../review/entities/review.entity';
 import { Store } from '../../store/entities/store.entity';
+import { UserRole } from '../enums/user-role.enum';
 
 @Entity('users')
 export class User {
@@ -39,6 +40,9 @@ export class User {
 
   @OneToMany(() => Order, (order) => order.user)
   orders: Order[];
+
+  @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
+  role: UserRole;
 
   @CreateDateColumn()
   createdAt: Date;
