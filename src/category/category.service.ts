@@ -33,7 +33,11 @@ export class CategoryService {
   }
 
   async findAll(store_id: number): Promise<CategoryBasicDto[]> {
-    return this.categoryRepository.find({ where: { store_id } });
+    return this.categoryRepository.find({
+      where: { store_id },
+      relations: ['store'],
+      order: { updatedAt: 'DESC' },
+    });
   }
 
   async findOne(id: number, store_id: number): Promise<Category> {
