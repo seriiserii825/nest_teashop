@@ -17,11 +17,13 @@ import { CurrentUser } from 'src/user/decorators/user.decorator';
 import { CategoryService } from './category.service';
 import { CategoryBasicDto, CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { Admin } from 'src/auth/decorators/admin.decorator';
 
 @Controller('categories')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
+  @Admin()
   @Post('store/:store_id')
   @ApiParam({ name: 'store_id', type: 'string' })
   @ApiBody({ type: CreateCategoryDto })
@@ -52,6 +54,7 @@ export class CategoryController {
     return this.categoryService.findOne(+id, +store_id);
   }
 
+  @Admin()
   @Patch(':id/store/:store_id')
   @ApiParam({ name: 'id', type: 'string' })
   @ApiParam({ name: 'store_id', type: 'string' })
@@ -65,6 +68,7 @@ export class CategoryController {
     return this.categoryService.update(+id, +store_id, updateCategoryDto);
   }
 
+  @Admin()
   @Delete(':id/store/:store_id')
   @ApiParam({ name: 'id', type: 'string' })
   @ApiParam({ name: 'store_id', type: 'string' })

@@ -16,6 +16,7 @@ import { CreateUserDto, UserBasicDto } from 'src/user/dto/user.dto';
 import { AuthService } from './auth.service';
 import { LoginResponseDto } from './dto/create-auth.dto';
 import { ILoginResponseWithoutRefresh } from './interfaces/ILoginResponse';
+import { AuthJwt } from './decorators/auth.jwt.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -65,6 +66,7 @@ export class AuthController {
     return { ...user, tokens: { accessToken: tokens.accessToken } };
   }
 
+  @AuthJwt()
   @HttpCode(200)
   @Post('logout')
   logout(@Res({ passthrough: true }) res: Response): void {
