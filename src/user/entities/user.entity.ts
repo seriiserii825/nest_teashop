@@ -26,7 +26,7 @@ export class User {
   @Column({ nullable: true, select: false })
   password: string;
 
-  @Column({ default: '/uploads/no-user-image.png' })
+  @Column({ default: '/uploads/no-user.webp' })
   picture: string;
 
   @OneToMany(() => Store, (store) => store.user)
