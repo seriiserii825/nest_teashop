@@ -1,5 +1,15 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
-import { IsDate, IsNumber, IsString, Max, Min } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsDate,
+  IsNumber,
+  IsString,
+  Max,
+  Min,
+  ValidateNested,
+} from 'class-validator';
+import { ProductBasicDto } from 'src/product/dto/create-product.dto';
+import { Product } from 'src/product/entities/product.entity';
 
 export class ReviewBasicDto {
   @ApiProperty({ example: 1 })
@@ -23,6 +33,14 @@ export class ReviewBasicDto {
   @ApiProperty({ example: 1 })
   @IsNumber()
   product_id: number;
+
+  @ApiProperty({
+    type: () => ProductBasicDto,
+    description: 'List of reviews made by the user',
+  })
+  @ValidateNested()
+  @Type(() => ProductBasicDto)
+  products?: Product[];
 
   @ApiProperty({ example: 1 })
   @IsNumber()

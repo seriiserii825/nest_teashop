@@ -48,11 +48,8 @@ export class ReviewController {
   @Get('store/:store_id')
   @ApiParam({ name: 'store_id', type: Number })
   @ApiOkResponse({ type: [ReviewBasicDto] })
-  findAll(
-    @CurrentUser('id') user_id: number,
-    @Param('store_id') store_id: string,
-  ) {
-    return this.reviewService.findAll(+store_id, +user_id);
+  findAll(@Param('store_id') store_id: string) {
+    return this.reviewService.findAll(+store_id);
   }
 
   @Get(':id/store/:store_id')

@@ -25,10 +25,11 @@ export class ReviewService {
     return this.reviewRepository.save(review);
   }
 
-  findAll(store_id: number, user_id: number): Promise<ReviewBasicDto[]> {
+  findAll(store_id: number): Promise<ReviewBasicDto[]> {
     return this.reviewRepository.find({
-      where: { store_id, user_id },
+      where: { store_id },
       order: { updatedAt: 'DESC' },
+      relations: ['product'],
     });
   }
 
