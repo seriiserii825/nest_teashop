@@ -221,6 +221,13 @@ export class ProductService {
 
   // ==================== ПУБЛИЧНЫЕ МЕТОДЫ ПОИСКА ====================
 
+  async findAllArray(store_id: number) {
+    return this.productRepository.find({
+      where: { store_id },
+      order: { updatedAt: 'DESC' },
+    });
+  }
+
   async findAll(query: QueryProductDto) {
     const { page = 1, limit = 10, search, sortKey, sortOrder = 'desc' } = query;
     await new Promise((resolve) => setTimeout(resolve, 600));

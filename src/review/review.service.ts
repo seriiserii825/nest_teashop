@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ProductService } from 'src/product/product.service';
 import { Repository } from 'typeorm';
 import { CreateReviewDto, ReviewBasicDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
@@ -9,18 +10,18 @@ import { Review } from './entities/review.entity';
 export class ReviewService {
   constructor(
     @InjectRepository(Review) private reviewRepository: Repository<Review>,
+    private productService: ProductService,
   ) {}
-  create(
+  async create(
     createReviewDto: CreateReviewDto,
     store_id: number,
     user_id: number,
-    product_id: number,
   ): Promise<ReviewBasicDto> {
+    await this.productService.findOne(createReviewDto.product_id, store_id);
     const review = this.reviewRepository.create({
       ...createReviewDto,
       store_id,
       user_id,
-      product_id,
     });
     return this.reviewRepository.save(review);
   }

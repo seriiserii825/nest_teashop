@@ -26,23 +26,16 @@ export class ReviewController {
 
   @Admin()
   @AuthJwt()
-  @Post('store/:store_id/product/:product_id')
+  @Post('store/:store_id/')
   @ApiBody({ type: CreateReviewDto })
   @ApiParam({ name: 'store_id', type: Number })
-  @ApiParam({ name: 'product_id', type: Number })
   @ApiCreatedResponse({ type: ReviewBasicDto })
   create(
     @CurrentUser('id') user_id: number,
     @Param('store_id') store_id: number,
-    @Param('product_id') product_id: number,
     @Body() createReviewDto: CreateReviewDto,
   ): Promise<ReviewBasicDto> {
-    return this.reviewService.create(
-      createReviewDto,
-      +store_id,
-      +user_id,
-      +product_id,
-    );
+    return this.reviewService.create(createReviewDto, +store_id, +user_id);
   }
 
   @Get('store/:store_id')

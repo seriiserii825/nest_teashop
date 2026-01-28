@@ -85,6 +85,12 @@ export class ProductController {
     return this.productService.findAll(query);
   }
 
+  @Get('store/:store_id/find-array')
+  @ApiOkResponse({ type: [ProductBasicDto] })
+  findAllArray(@Param('store_id') store_id: string) {
+    return this.productService.findAllArray(+store_id);
+  }
+
   @Get(':id/store/:store_id')
   @ApiParam({ name: 'id', description: 'Product ID' })
   @ApiParam({ name: 'store_id', description: 'Store ID' })

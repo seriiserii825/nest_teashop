@@ -3,10 +3,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Review } from './entities/review.entity';
 import { ReviewController } from './review.controller';
 import { ReviewService } from './review.service';
+import { ProductService } from 'src/product/product.service';
+import { Product } from 'src/product/entities/product.entity';
+import { FileService } from 'src/file/file.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Review])],
+  imports: [TypeOrmModule.forFeature([Review, Product])],
   controllers: [ReviewController],
-  providers: [ReviewService],
+  providers: [ReviewService, ProductService, FileService],
 })
 export class ReviewModule {}

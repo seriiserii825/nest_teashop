@@ -9,5 +9,6 @@ import { FileService } from 'src/file/file.service';
   imports: [TypeOrmModule.forFeature([Product])],
   controllers: [ProductController],
   providers: [ProductService, FileService],
+  exports: [ProductService],
 })
 export class ProductModule {}
