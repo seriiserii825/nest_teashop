@@ -1,14 +1,27 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString, IsArray, ValidateNested } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsIn, IsNumber, IsString } from 'class-validator';
+
+// Определяем возможные ID как константы
+export const STATISTIC_IDS = [
+  'revenue',
+  'products',
+  'categories',
+  'colors',
+  'reviews',
+  'rating',
+] as const;
+
+export type StatisticId = (typeof STATISTIC_IDS)[number];
 
 export class StatisticItemDto {
   @ApiProperty({
+    enum: STATISTIC_IDS,
     example: 'revenue',
     description: 'Statistic identifier',
   })
   @IsString()
-  id: string;
+  @IsIn(STATISTIC_IDS)
+  id: StatisticId;
 
   @ApiProperty({
     example: 'Total Revenue',
@@ -23,24 +36,4 @@ export class StatisticItemDto {
   })
   @IsNumber()
   value: number;
-}
-
-export class StatisticsResponseDto {
-  @ApiProperty({
-    type: [StatisticItemDto],
-    description: 'Array of statistics',
-    isArray: true,
-    example: [
-      { id: 'revenue', name: 'Total Revenue', value: 1360 },
-      { id: 'products', name: 'Products Count', value: 1 },
-      { id: 'categories', name: 'Categories Count', value: 2 },
-      { id: 'colors', name: 'Colors Count', value: 1 },
-      { id: 'reviews', name: 'Reviews Count', value: 1 },
-      { id: 'rating', name: 'Average Rating', value: 5 },
-    ],
-  })
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => StatisticItemDto)
-  statistics: StatisticItemDto[];
 }

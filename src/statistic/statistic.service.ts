@@ -7,6 +7,7 @@ import { Product } from 'src/product/entities/product.entity';
 import { Review } from 'src/review/entities/review.entity';
 import { User } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
+import { StatisticItemDto } from './dto/statistic.dto';
 const dayjs = dayjsModule.default;
 
 dayjs.locale('en');
@@ -21,7 +22,8 @@ export class StatisticService {
     @InjectRepository(Review) private reviewRepository: Repository<Review>,
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
-  async getMainStatistics(store_id: number) {
+
+  async getMainStatistics(store_id: number): Promise<StatisticItemDto[]> {
     const totalRevenue = await this.calculateTotalRevenue(store_id);
     const productsCount = await this.countProducts(store_id);
     const categoriesCount = await this.countCategories(store_id);
@@ -34,7 +36,7 @@ export class StatisticService {
       { id: 'categories', name: 'Categories Count', value: categoriesCount },
       { id: 'colors', name: 'Colors Count', value: colorsCount },
       { id: 'reviews', name: 'Reviews Count', value: reviewsCount },
-      { id: 'rating', name: 'Average Rating', value: averageRating },
+      { id: 'rating', name: 'Average Rating', value: averageRating || 0 },
     ];
   }
 
