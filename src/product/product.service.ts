@@ -5,26 +5,25 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import { path as rootPath } from 'app-root-path';
 import { InjectRepository } from '@nestjs/typeorm';
+import { path as rootPath } from 'app-root-path';
 import { unlink } from 'fs/promises';
 import { join } from 'path';
-import { FileService } from 'src/file/file.service';
-import IFileResponse from 'src/file/interfaces/IFile';
+import { FileManagerService } from 'src/file-manager/file-manager.service';
 import { DataSource, QueryRunner, Repository } from 'typeorm';
 import {
   CreateProductDto,
   ProductsPaginatedDto,
 } from './dto/create-product.dto';
+import { QueryProductDto } from './dto/query-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
-import { QueryProductDto } from './dto/query-product.dto';
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectRepository(Product) private productRepository: Repository<Product>,
-    private readonly fileService: FileService,
+    private readonly fileManagerService: FileManagerService,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -46,14 +45,14 @@ export class ProductService {
       });
       const savedProduct = await queryRunner.manager.save(newProduct);
 
-      // Загружаем изображения
-      const uploadedImages = await this.uploadProductImages(
+      //   Загружаем изображения через FileManagerService
+      const uploadedImages = await this.fileManagerService.uploadMultipleFiles(
         files,
-        savedProduct.id,
+        `products/${savedProduct.id}`,
       );
 
       // Обновляем продукт с изображениями
-      savedProduct.images = uploadedImages.map((img) => img.url);
+      savedProduct.images = uploadedImages;
       return queryRunner.manager.save(savedProduct);
     });
   }
@@ -82,30 +81,26 @@ export class ProductService {
       // Обновляем основные поля
       this.updateProductFields(product, updateProductDto);
 
-      // Обрабатываем изображения
-      const { imagesToKeep, imagesToDelete } = this.processImageUpdates(
-        product.images,
-        updateProductDto.old_images,
-      );
+      // 👇 Обрабатываем изображения через FileManagerService
+      const { filesToKeep, filesToDelete } =
+        this.fileManagerService.processFileUpdates(
+          product.images,
+          updateProductDto.old_images,
+        );
 
-      // Загружаем новые изображения
-      const newUploadedImages = await this.uploadProductImages(
+      // // 👇 Объединяем старые и новые изображения
+      product.images = await this.fileManagerService.mergeFiles(
+        filesToKeep,
         files,
-        product.id,
+        `products/${product.id}`,
       );
-
-      // Обновляем массив изображений
-      product.images = [
-        ...imagesToKeep,
-        ...newUploadedImages.map((img) => img.url),
-      ];
 
       // Сохраняем продукт
       const updatedProduct = await queryRunner.manager.save(product);
 
-      // Удаляем старые файлы после успешного сохранения
-      if (imagesToDelete.length > 0) {
-        await this.deleteImageFiles(imagesToDelete);
+      // // 👇 Удаляем старые файлы после успешного сохранения
+      if (filesToDelete.length > 0) {
+        await this.fileManagerService.deleteMultipleFiles(filesToDelete);
       }
 
       return updatedProduct;
@@ -155,26 +150,6 @@ export class ProductService {
   }
 
   /**
-   * Загружает изображения продукта
-   */
-  private async uploadProductImages(
-    files: Express.Multer.File[] | undefined,
-    productId: number,
-  ): Promise<IFileResponse[]> {
-    if (!files || files.length === 0) {
-      return [];
-    }
-
-    try {
-      return await this.fileService.saveFiles(files, `products/${productId}`);
-    } catch (fileError) {
-      const errorMessage =
-        fileError instanceof Error ? fileError.message : 'Unknown error';
-      throw new BadRequestException(`File upload failed: ${errorMessage}`);
-    }
-  }
-
-  /**
    * Обновляет поля продукта из DTO
    */
   private updateProductFields(
@@ -188,21 +163,6 @@ export class ProductService {
     if (updateDto.category_id !== undefined)
       product.category_id = updateDto.category_id;
     if (updateDto.color_id !== undefined) product.color_id = updateDto.color_id;
-  }
-
-  /**
-   * Определяет какие изображения оставить, а какие удалить
-   */
-  private processImageUpdates(
-    currentImages: string[],
-    old_images?: string[],
-  ): { imagesToKeep: string[]; imagesToDelete: string[] } {
-    const imagesToKeep = old_images || [];
-    const imagesToDelete = currentImages.filter(
-      (img) => !imagesToKeep.includes(img),
-    );
-
-    return { imagesToKeep, imagesToDelete };
   }
 
   /**

@@ -6,10 +6,11 @@ import { ReviewService } from './review.service';
 import { ProductService } from 'src/product/product.service';
 import { Product } from 'src/product/entities/product.entity';
 import { FileService } from 'src/file/file.service';
+import { FileManagerService } from 'src/file-manager/file-manager.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Review, Product])],
   controllers: [ReviewController],
-  providers: [ReviewService, ProductService, FileService],
+  providers: [ReviewService, ProductService, FileService, FileManagerService],
 })
 export class ReviewModule {}
