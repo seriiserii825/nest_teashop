@@ -127,7 +127,6 @@ export class FileManagerService {
     try {
       const filePath = join(rootPath, fileUrl);
       await unlink(filePath);
-      console.log(`Deleted file: ${filePath}`);
     } catch (error) {
       console.error(`Failed to delete file ${fileUrl}:`, error);
       // Не бросаем ошибку, чтобы не прерывать основной процесс

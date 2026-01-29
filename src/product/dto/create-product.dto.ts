@@ -84,16 +84,7 @@ export class CreateProductDto extends PickType(ProductBasicDto, [
   'price',
   'category_id',
   'color_id',
-]) {
-  @ApiProperty({
-    type: 'array',
-    items: { type: 'string', format: 'binary' },
-    description: 'Product images (max 10 files)',
-    required: false,
-  })
-  @IsOptional()
-  images?: any[];
-}
+]) {}
 
 export class ProductFullDto extends ProductBasicDto {
   @ApiProperty({

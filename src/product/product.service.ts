@@ -173,7 +173,6 @@ export class ProductService {
       try {
         const filePath = join(rootPath, url);
         await unlink(filePath);
-        console.log(`Deleted image: ${filePath}`);
       } catch (error) {
         console.error(`Failed to delete image ${url}:`, error);
       }
