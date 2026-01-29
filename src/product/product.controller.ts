@@ -11,6 +11,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 import {
   ApiBody,
   ApiConflictResponse,
@@ -46,7 +47,7 @@ export class ProductController {
     description: 'Product with this title already exists in the store',
   })
   @ApiOkResponse({ type: ProductBasicDto })
-  @UseInterceptors(FilesInterceptor('images', 10)) // максимум 10 файлов
+  @UseInterceptors(FilesInterceptor('images', 10, { storage: memoryStorage() })) // максимум 10 файлов
   @ApiConsumes('multipart/form-data')
   create(
     @CurrentUser('id') user_id: number,
@@ -68,7 +69,7 @@ export class ProductController {
   @ApiParam({ name: 'id', description: 'Product ID' })
   @ApiParam({ name: 'store_id', description: 'Store ID' })
   @ApiBody({ type: UpdateProductDto })
-  @UseInterceptors(FilesInterceptor('images', 10)) // максимум 10 файлов
+  @UseInterceptors(FilesInterceptor('images', 10, { storage: memoryStorage() })) // максимум 10 файлов
   @ApiConsumes('multipart/form-data')
   @ApiOkResponse({ type: ProductBasicDto })
   update(

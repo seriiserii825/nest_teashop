@@ -14,6 +14,11 @@ export class FileService {
 
     const response: IFileResponse[] = await Promise.all(
       files.map(async (file) => {
+        if (!file.buffer) {
+          throw new Error(
+            `File buffer is empty for ${file.originalname}. Make sure to use memoryStorage() in FileInterceptor.`,
+          );
+        }
         const originalName = `${Date.now()}-${file.originalname}`;
         await writeFile(`${uploadedFolder}/${originalName}`, file.buffer);
         return {

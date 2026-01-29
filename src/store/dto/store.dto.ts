@@ -76,10 +76,10 @@ export class UpdateStoreDto extends PartialType(
   PickType(StoreBasicDto, ['title', 'description']),
 ) {
   @ApiPropertyOptional({
-    type: [String],
-    description: 'Old image URLs to keep',
+    type: String,
+    description: 'Old picture URL to keep',
   })
   @IsOptional()
-  @IsString({ each: true })
-  old_images?: string[];
+  @IsString()
+  old_picture?: string;
 }

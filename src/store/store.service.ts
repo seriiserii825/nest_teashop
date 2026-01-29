@@ -55,10 +55,10 @@ export class StoreService {
     id: number,
     updateStoreDto: UpdateStoreDto,
     user_id: number,
-    files?: Express.Multer.File[],
+    file: Express.Multer.File,
   ): Promise<StoreBasicDto> {
     // Check if there are fields to update
-    if (Object.keys(updateStoreDto).length === 0) {
+    if (Object.keys(updateStoreDto).length === 0 && !file) {
       throw new BadRequestException('No fields to update');
     }
 
@@ -76,30 +76,20 @@ export class StoreService {
     // Merge the updates
     Object.assign(store, updateStoreDto);
 
-    // 👇 Обрабатываем изображения через FileManagerService
-    const { filesToKeep, filesToDelete } =
-      this.fileManagerService.processFileUpdates(
-        [store.picture],
-        updateStoreDto.old_images ? updateStoreDto.old_images : [],
-      );
-
-    // // 👇 Объединяем старые и новые изображения
-    const pictures = await this.fileManagerService.mergeFiles(
-      filesToKeep,
-      files,
+    // Обновляем картинку через FileManagerService
+    const newPicture = await this.fileManagerService.updateSingleFile(
+      store.picture,
+      file,
+      updateStoreDto.old_picture,
       `stores/${store.id}`,
     );
-    if (pictures.length > 0) {
-      store.picture = pictures[0];
+
+    if (newPicture) {
+      store.picture = newPicture;
     }
 
     // Save and return the updated store
-    const updatedStore = await this.storeRepository.save(store);
-
-    if (filesToDelete.length > 0) {
-      await this.fileManagerService.deleteMultipleFiles(filesToDelete);
-    }
-    return updatedStore;
+    return this.storeRepository.save(store);
   }
 
   async remove(id: number, user_id: number): Promise<StoreRemoveDto> {

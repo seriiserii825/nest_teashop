@@ -6,10 +6,11 @@ import {
   Param,
   Patch,
   Post,
-  UploadedFiles,
+  UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 import {
   ApiBody,
   ApiConsumes,
@@ -60,16 +61,16 @@ export class StoreController {
 
   @Patch(':id')
   @ApiBody({ type: UpdateStoreDto })
-  @UseInterceptors(FilesInterceptor('images', 10)) // максимум 10 файлов
+  @UseInterceptors(FileInterceptor('picture', { storage: memoryStorage() }))
   @ApiConsumes('multipart/form-data')
   @ApiOkResponse({ type: StoreBasicDto })
   update(
     @CurrentUser() user: User,
     @Param('id') id: string,
     @Body() updateStoreDto: UpdateStoreDto,
-    @UploadedFiles() files: Express.Multer.File[],
+    @UploadedFile() file: Express.Multer.File,
   ): Promise<StoreBasicDto> {
-    return this.storeService.update(+id, updateStoreDto, user.id, files);
+    return this.storeService.update(+id, updateStoreDto, user.id, file);
   }
 
   @Delete(':id')
