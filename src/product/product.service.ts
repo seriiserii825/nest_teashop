@@ -12,7 +12,10 @@ import { join } from 'path';
 import { FileService } from 'src/file/file.service';
 import IFileResponse from 'src/file/interfaces/IFile';
 import { DataSource, QueryRunner, Repository } from 'typeorm';
-import { CreateProductDto } from './dto/create-product.dto';
+import {
+  CreateProductDto,
+  ProductsPaginatedDto,
+} from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
 import { QueryProductDto } from './dto/query-product.dto';
@@ -228,13 +231,17 @@ export class ProductService {
     });
   }
 
-  async findAll(query: QueryProductDto) {
+  async findAll(
+    store_id: number,
+    query: QueryProductDto,
+  ): Promise<ProductsPaginatedDto> {
     const { page = 1, limit = 10, search, sortKey, sortOrder = 'desc' } = query;
     await new Promise((resolve) => setTimeout(resolve, 600));
 
     const queryBuilder = this.buildProductQuery(search, sortKey, sortOrder);
 
     const [products, total] = await queryBuilder
+      .where('product.store_id = :store_id', { store_id })
       .skip((page - 1) * limit)
       .take(limit)
       .getManyAndCount();
@@ -308,7 +315,7 @@ export class ProductService {
     total: number,
     page: number,
     limit: number,
-  ) {
+  ): ProductsPaginatedDto {
     return {
       data,
       meta: {

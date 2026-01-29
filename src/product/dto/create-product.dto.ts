@@ -7,6 +7,8 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  Max,
+  Min,
   ValidateNested,
 } from 'class-validator';
 import { OrderItemsBasicDto } from 'src/order-item/dto/create-order-item.dto';
@@ -29,7 +31,9 @@ export class ProductBasicDto {
   description: string;
 
   @ApiProperty({ example: 9.99, description: 'Product Price' })
-  @IsNumber()
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0)
+  @Max(999999.99)
   price: number;
 
   @ApiProperty({
@@ -41,7 +45,7 @@ export class ProductBasicDto {
   @IsString({
     each: true,
   })
-  images: string;
+  images: string[];
 
   @ApiProperty({ example: 1, description: 'Store ID' })
   @IsNumber()
@@ -133,7 +137,7 @@ class PaginationMetaDto {
   totalPages: number;
 }
 
-export class AllProductsDto {
+export class ProductsPaginatedDto {
   @ApiProperty({ type: [ProductBasicDto], description: 'Array of products' })
   @IsArray()
   @ValidateNested({ each: true })

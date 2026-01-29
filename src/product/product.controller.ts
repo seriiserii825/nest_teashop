@@ -26,6 +26,7 @@ import {
   CreateProductDto,
   ProductBasicDto,
   ProductFullDto,
+  ProductsPaginatedDto,
 } from './dto/create-product.dto';
 import { QueryProductDto } from './dto/query-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -80,9 +81,13 @@ export class ProductController {
   }
 
   @Get('store/:store_id')
-  @ApiOkResponse({ type: ProductFullDto })
-  findAll(@Query() query: QueryProductDto) {
-    return this.productService.findAll(query);
+  @ApiParam({ name: 'store_id', description: 'Store ID' })
+  @ApiOkResponse({ type: ProductsPaginatedDto })
+  findAll(
+    @Param('store_id') store_id: string,
+    @Query() query: QueryProductDto,
+  ): Promise<ProductsPaginatedDto> {
+    return this.productService.findAll(+store_id, query);
   }
 
   @Get('store/:store_id/find-array')
