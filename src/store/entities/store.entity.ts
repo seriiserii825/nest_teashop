@@ -1,4 +1,3 @@
-import { OrderItem } from '../../order-item/entities/order-item.entity';
 import {
   Column,
   CreateDateColumn,
@@ -11,6 +10,7 @@ import {
 } from 'typeorm';
 import { Category } from '../../category/entities/category.entity';
 import { Color } from '../../color/entities/color.entity';
+import { OrderItem } from '../../order-item/entities/order-item.entity';
 import { Product } from '../../product/entities/product.entity';
 import { Review } from '../../review/entities/review.entity';
 import { User } from '../../user/entities/user.entity';
@@ -47,6 +47,9 @@ export class Store {
 
   @OneToMany(() => OrderItem, (orderItem) => orderItem.product)
   order_items: OrderItem[];
+
+  @Column({ nullable: true })
+  picture: string;
 
   @CreateDateColumn()
   createdAt: Date;
