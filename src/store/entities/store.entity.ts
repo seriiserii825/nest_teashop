@@ -48,7 +48,7 @@ export class Store {
   @OneToMany(() => OrderItem, (orderItem) => orderItem.product)
   order_items: OrderItem[];
 
-  @Column({ nullable: true })
+  @Column({ default: '/uploads/no-store.webp' })
   picture: string;
 
   @CreateDateColumn()

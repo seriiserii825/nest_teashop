@@ -34,6 +34,10 @@ export class StoreBasicDto {
   user_id: number;
 
   @ApiProperty()
+  @IsString()
+  picture: string;
+
+  @ApiProperty()
   createdAt: Date;
 
   @ApiProperty()
