@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { FileManagerService } from 'src/file-manager/file-manager.service';
 import { Not, Repository } from 'typeorm';
 import {
   CreateStoreDto,
@@ -17,6 +18,7 @@ import { Store } from './entities/store.entity';
 export class StoreService {
   constructor(
     @InjectRepository(Store) private storeRepository: Repository<Store>,
+    private readonly fileManagerService: FileManagerService,
   ) {}
   async create(
     createStoreDto: CreateStoreDto,
@@ -53,6 +55,7 @@ export class StoreService {
     id: number,
     updateStoreDto: UpdateStoreDto,
     user_id: number,
+    files?: Express.Multer.File[],
   ): Promise<StoreBasicDto> {
     // Check if there are fields to update
     if (Object.keys(updateStoreDto).length === 0) {
@@ -73,8 +76,29 @@ export class StoreService {
     // Merge the updates
     Object.assign(store, updateStoreDto);
 
+    // 👇 Обрабатываем изображения через FileManagerService
+    const { filesToKeep, filesToDelete } =
+      this.fileManagerService.processFileUpdates(
+        [store.picture],
+        updateStoreDto.old_images ? updateStoreDto.old_images : [],
+      );
+
+    // // 👇 Объединяем старые и новые изображения
+    const pictures = await this.fileManagerService.mergeFiles(
+      filesToKeep,
+      files,
+      `stores/${store.id}`,
+    );
+    if (pictures.length > 0) {
+      store.picture = pictures[0];
+    }
+
     // Save and return the updated store
     const updatedStore = await this.storeRepository.save(store);
+
+    if (filesToDelete.length > 0) {
+      await this.fileManagerService.deleteMultipleFiles(filesToDelete);
+    }
     return updatedStore;
   }
 

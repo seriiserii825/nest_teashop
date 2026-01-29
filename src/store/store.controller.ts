@@ -6,8 +6,17 @@ import {
   Param,
   Patch,
   Post,
+  UploadedFiles,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ApiBody, ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiCreatedResponse,
+  ApiOkResponse,
+} from '@nestjs/swagger';
+import { Admin } from 'src/auth/decorators/admin.decorator';
 import { AuthJwt } from 'src/auth/decorators/auth.jwt.decorator';
 import { CurrentUser } from 'src/user/decorators/user.decorator';
 import { User } from 'src/user/entities/user.entity';
@@ -19,7 +28,6 @@ import {
 } from './dto/store.dto';
 import { Store } from './entities/store.entity';
 import { StoreService } from './store.service';
-import { Admin } from 'src/auth/decorators/admin.decorator';
 
 @Admin()
 @AuthJwt()
@@ -52,13 +60,16 @@ export class StoreController {
 
   @Patch(':id')
   @ApiBody({ type: UpdateStoreDto })
+  @UseInterceptors(FilesInterceptor('images', 10)) // максимум 10 файлов
+  @ApiConsumes('multipart/form-data')
   @ApiOkResponse({ type: StoreBasicDto })
   update(
     @CurrentUser() user: User,
     @Param('id') id: string,
     @Body() updateStoreDto: UpdateStoreDto,
+    @UploadedFiles() files: Express.Multer.File[],
   ): Promise<StoreBasicDto> {
-    return this.storeService.update(+id, updateStoreDto, user.id);
+    return this.storeService.update(+id, updateStoreDto, user.id, files);
   }
 
   @Delete(':id')

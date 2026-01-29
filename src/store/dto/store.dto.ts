@@ -74,4 +74,12 @@ export class StoreRemoveDto {
 export class CreateStoreDto extends PickType(StoreBasicDto, ['title']) {}
 export class UpdateStoreDto extends PartialType(
   PickType(StoreBasicDto, ['title', 'description']),
-) {}
+) {
+  @ApiPropertyOptional({
+    type: [String],
+    description: 'Old image URLs to keep',
+  })
+  @IsOptional()
+  @IsString({ each: true })
+  old_images?: string[];
+}
