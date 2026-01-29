@@ -16,7 +16,7 @@ export type StatisticId = (typeof STATISTIC_IDS)[number];
 export class StatisticItemDto {
   @ApiProperty({
     enum: STATISTIC_IDS,
-    example: 'revenue',
+    example: STATISTIC_IDS,
     description: 'Statistic identifier',
   })
   @IsString()
