@@ -24,6 +24,7 @@ import { User } from 'src/user/entities/user.entity';
 import {
   CreateStoreDto,
   StoreBasicDto,
+  StoreFullDto,
   StoreRemoveDto,
   UpdateStoreDto,
 } from './dto/store.dto';
@@ -55,8 +56,14 @@ export class StoreController {
 
   @Get(':id')
   @ApiOkResponse({ type: StoreBasicDto })
-  findOne(@CurrentUser() user: User, @Param('id') id: string): Promise<Store> {
-    return this.storeService.findOne(+id, user.id);
+  findOne(@Param('id') id: string): Promise<Store> {
+    return this.storeService.findOne(+id);
+  }
+
+  @Get(':id/with-relations')
+  @ApiOkResponse({ type: StoreFullDto })
+  findOneWithRelations(@Param('id') id: string): Promise<StoreFullDto> {
+    return this.storeService.findOneWithRelations(+id);
   }
 
   @Admin()
