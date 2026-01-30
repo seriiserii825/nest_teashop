@@ -7,6 +7,7 @@ import {
 import { Type } from 'class-transformer';
 import { IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
 import { CategoryBasicDto } from 'src/category/dto/create-category.dto';
+import { ColorBasicDto } from 'src/color/dto/create-color.dto';
 import { OrderItemsBasicDto } from 'src/order-item/dto/create-order-item.dto';
 import { ProductBasicDto } from 'src/product/dto/create-product.dto';
 import { ReviewBasicDto } from 'src/review/dto/create-review.dto';
@@ -59,6 +60,11 @@ export class StoreFullDto extends StoreBasicDto {
   @Type(() => ReviewBasicDto)
   @IsOptional()
   reviews?: ReviewBasicDto[];
+
+  @ApiPropertyOptional({ type: [ColorBasicDto] })
+  @Type(() => ColorBasicDto)
+  @IsOptional()
+  colors?: ColorBasicDto[];
 
   @ApiPropertyOptional({ type: [OrderItemsBasicDto] })
   @Type(() => OrderItemsBasicDto)
