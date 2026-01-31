@@ -24,18 +24,19 @@ import { User } from 'src/user/entities/user.entity';
 import {
   CreateStoreDto,
   StoreBasicDto,
+  StoreFullDto,
   StoreRemoveDto,
   UpdateStoreDto,
 } from './dto/store.dto';
 import { Store } from './entities/store.entity';
 import { StoreService } from './store.service';
 
-@Admin()
-@AuthJwt()
 @Controller('stores')
 export class StoreController {
   constructor(private readonly storeService: StoreService) {}
 
+  @Admin()
+  @AuthJwt()
   @Post()
   @ApiBody({ type: CreateStoreDto })
   @ApiCreatedResponse({ type: StoreBasicDto })
@@ -55,10 +56,18 @@ export class StoreController {
 
   @Get(':id')
   @ApiOkResponse({ type: StoreBasicDto })
-  findOne(@CurrentUser() user: User, @Param('id') id: string): Promise<Store> {
-    return this.storeService.findOne(+id, user.id);
+  findOne(@Param('id') id: string): Promise<Store> {
+    return this.storeService.findOne(+id);
   }
 
+  @Get(':id/with-relations')
+  @ApiOkResponse({ type: StoreFullDto })
+  findOneWithRelations(@Param('id') id: string): Promise<StoreFullDto> {
+    return this.storeService.findOneWithRelations(+id);
+  }
+
+  @Admin()
+  @AuthJwt()
   @Patch(':id')
   @ApiBody({ type: UpdateStoreDto })
   @UseInterceptors(FileInterceptor('picture', { storage: memoryStorage() }))
@@ -73,6 +82,8 @@ export class StoreController {
     return this.storeService.update(+id, updateStoreDto, user.id, file);
   }
 
+  @Admin()
+  @AuthJwt()
   @Delete(':id')
   @ApiOkResponse({ type: StoreRemoveDto })
   remove(

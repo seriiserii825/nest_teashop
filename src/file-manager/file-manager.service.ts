@@ -1,14 +1,17 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { path as rootPath } from 'app-root-path';
-import { unlink } from 'fs/promises';
+import { ensureDir } from 'fs-extra';
+import { unlink, writeFile } from 'fs/promises';
 import { join } from 'path';
-import { FileService } from 'src/file/file.service';
-import { FileUpdateResult } from './interfaces/file-update-result.interface';
+import {
+  FileUpdateResult,
+  IFileResponse,
+} from './interfaces/file-update-result.interface';
+
+import { path } from 'app-root-path';
 
 @Injectable()
 export class FileManagerService {
-  constructor(private readonly fileService: FileService) {}
-
   /**
    * Загружает один файл
    * @param file - файл для загрузки
@@ -24,7 +27,7 @@ export class FileManagerService {
     }
 
     try {
-      const [uploadedFile] = await this.fileService.saveFiles([file], folder);
+      const [uploadedFile] = await this.saveFiles([file], folder);
       return uploadedFile.url;
     } catch (error) {
       const errorMessage =
@@ -48,7 +51,7 @@ export class FileManagerService {
     }
 
     try {
-      const uploadedFiles = await this.fileService.saveFiles(files, folder);
+      const uploadedFiles = await this.saveFiles(files, folder);
       return uploadedFiles.map((file) => file.url);
     } catch (error) {
       const errorMessage =
@@ -160,5 +163,30 @@ export class FileManagerService {
   ): Promise<string[]> {
     const uploadedFiles = await this.uploadMultipleFiles(newFiles, folder);
     return [...filesToKeep, ...uploadedFiles];
+  }
+
+  async saveFiles(
+    files: Express.Multer.File[],
+    folder: string = 'products',
+  ): Promise<IFileResponse[]> {
+    const uploadedFolder = `${path}/uploads/${folder}`;
+    await ensureDir(uploadedFolder);
+
+    const response: IFileResponse[] = await Promise.all(
+      files.map(async (file) => {
+        if (!file.buffer) {
+          throw new Error(
+            `File buffer is empty for ${file.originalname}. Make sure to use memoryStorage() in FileInterceptor.`,
+          );
+        }
+        const originalName = `${Date.now()}-${file.originalname}`;
+        await writeFile(`${uploadedFolder}/${originalName}`, file.buffer);
+        return {
+          url: `/uploads/${folder}/${originalName}`,
+          name: originalName,
+        };
+      }),
+    );
+    return response;
   }
 }

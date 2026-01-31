@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-
+import { join } from 'path';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
@@ -11,9 +11,9 @@ import { ReviewModule } from './review/review.module';
 import { OrderModule } from './order/order.module';
 import { OrderItemModule } from './order-item/order-item.module';
 import { AuthModule } from './auth/auth.module';
-import { FileModule } from './file/file.module';
 import { StatisticModule } from './statistic/statistic.module';
 import { FileManagerModule } from './file-manager/file-manager.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
   imports: [
@@ -33,6 +33,10 @@ import { FileManagerModule } from './file-manager/file-manager.module';
       }),
       inject: [ConfigService],
     }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/uploads',
+    }),
     UserModule,
     StoreModule,
     ProductModule,
@@ -42,7 +46,6 @@ import { FileManagerModule } from './file-manager/file-manager.module';
     OrderModule,
     OrderItemModule,
     AuthModule,
-    FileModule,
     StatisticModule,
     FileManagerModule,
   ],

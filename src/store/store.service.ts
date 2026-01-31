@@ -9,6 +9,7 @@ import { Not, Repository } from 'typeorm';
 import {
   CreateStoreDto,
   StoreBasicDto,
+  StoreFullDto,
   StoreRemoveDto,
   UpdateStoreDto,
 } from './dto/store.dto';
@@ -41,9 +42,20 @@ export class StoreService {
     return stores;
   }
 
-  async findOne(id: number, user_id: number): Promise<Store> {
+  async findOne(id: number, user_id?: number): Promise<Store> {
     const store = await this.storeRepository.findOne({
-      where: { id, user_id },
+      where: { id, ...(user_id ? { user_id } : {}) },
+    });
+    if (!store) {
+      throw new NotFoundException(`Store with ID ${id} not found`);
+    }
+    return store;
+  }
+
+  async findOneWithRelations(id: number): Promise<StoreFullDto> {
+    const store = await this.storeRepository.findOne({
+      where: { id },
+      relations: ['categories', 'colors'],
     });
     if (!store) {
       throw new NotFoundException(`Store with ID ${id} not found`);
@@ -71,7 +83,7 @@ export class StoreService {
       );
     }
 
-    const store = await this.findOne(id, user_id);
+    const store = await this.findOne(id);
 
     // Merge the updates
     Object.assign(store, updateStoreDto);
