@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { OrderItem } from '../../order-item/entities/order-item.entity';
 import { User } from '../../user/entities/user.entity';
+import { Store } from '../../store/entities/store.entity';
 
 export enum OrderStatus {
   PENDING = 'PENDING',
@@ -36,6 +37,13 @@ export class Order {
 
   @Column()
   user_id: number;
+
+  @ManyToOne(() => Store, (store) => store.orders)
+  @JoinColumn({ name: 'store_id' })
+  store: Store;
+
+  @Column()
+  store_id: number;
 
   @CreateDateColumn()
   createdAt: Date;
