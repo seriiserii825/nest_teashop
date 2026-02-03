@@ -25,6 +25,9 @@ export class OrderBasicDto {
   @IsNumber()
   user_id: number;
 
+  @IsNumber()
+  store_id?: number;
+
   @ApiProperty({
     example: '2024-01-01T00:00:00Z',
     description: 'The date and time when the order was created',
