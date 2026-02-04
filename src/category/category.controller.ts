@@ -45,6 +45,12 @@ export class CategoryController {
     return this.categoryService.findAll(+store_id);
   }
 
+  @Get('store/:store_id/with-products-count')
+  @ApiParam({ name: 'store_id', type: 'string' })
+  findAllWithProductsCount(@Param('store_id') store_id: string) {
+    return this.categoryService.findAllWithProductsCount(+store_id);
+  }
+
   @Get(':id/store/:store_id')
   @ApiParam({ name: 'id', type: 'string' })
   @ApiParam({ name: 'store_id', type: 'string' })

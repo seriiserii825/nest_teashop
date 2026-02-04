@@ -52,6 +52,16 @@ export class CategoryService {
     return category;
   }
 
+  async findAllWithProductsCount(store_id: number) {
+    const categories = await this.categoryRepository
+      .createQueryBuilder('category')
+      .where('category.store_id = :store_id', { store_id })
+      .loadRelationCountAndMap('category.products_count', 'category.products')
+      .orderBy('category.updatedAt', 'DESC')
+      .getMany();
+    return categories;
+  }
+
   async update(
     id: number,
     store_id: number,

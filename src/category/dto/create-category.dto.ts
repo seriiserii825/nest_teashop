@@ -58,3 +58,12 @@ export class CategoryFullDto extends CategoryBasicDto {
   @IsOptional()
   products?: ProductBasicDto[];
 }
+
+export class CategoryWithProductsCountDto extends CategoryBasicDto {
+  @ApiProperty({
+    example: 10,
+    description: 'The number of products in this category',
+  })
+  @IsNumber()
+  products_count: number;
+}
