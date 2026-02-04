@@ -6,7 +6,11 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { StoreService } from 'src/store/store.service';
 import { Not, Repository } from 'typeorm';
-import { CategoryBasicDto, CreateCategoryDto } from './dto/create-category.dto';
+import {
+  CategoryBasicDto,
+  CategoryWithProductsCountDto,
+  CreateCategoryDto,
+} from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { Category } from './entities/category.entity';
 
@@ -52,14 +56,16 @@ export class CategoryService {
     return category;
   }
 
-  async findAllWithProductsCount(store_id: number) {
+  async findAllWithProductsCount(
+    store_id: number,
+  ): Promise<CategoryWithProductsCountDto[]> {
     const categories = await this.categoryRepository
       .createQueryBuilder('category')
       .where('category.store_id = :store_id', { store_id })
       .loadRelationCountAndMap('category.products_count', 'category.products')
       .orderBy('category.updatedAt', 'DESC')
       .getMany();
-    return categories;
+    return categories as unknown as CategoryWithProductsCountDto[];
   }
 
   async update(

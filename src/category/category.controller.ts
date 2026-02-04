@@ -15,7 +15,11 @@ import {
 } from '@nestjs/swagger';
 import { CurrentUser } from 'src/user/decorators/user.decorator';
 import { CategoryService } from './category.service';
-import { CategoryBasicDto, CreateCategoryDto } from './dto/create-category.dto';
+import {
+  CategoryBasicDto,
+  CategoryWithProductsCountDto,
+  CreateCategoryDto,
+} from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { Admin } from 'src/auth/decorators/admin.decorator';
 import { AuthJwt } from 'src/auth/decorators/auth.jwt.decorator';
@@ -47,7 +51,10 @@ export class CategoryController {
 
   @Get('store/:store_id/with-products-count')
   @ApiParam({ name: 'store_id', type: 'string' })
-  findAllWithProductsCount(@Param('store_id') store_id: string) {
+  @ApiOkResponse({ type: [CategoryWithProductsCountDto] })
+  findAllWithProductsCount(
+    @Param('store_id') store_id: string,
+  ): Promise<CategoryWithProductsCountDto[]> {
     return this.categoryService.findAllWithProductsCount(+store_id);
   }
 
