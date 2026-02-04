@@ -34,7 +34,8 @@ import { ServeStaticModule } from '@nestjs/serve-static';
       inject: [ConfigService],
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'uploads'),
+      // rootPath: join(__dirname, '..', 'uploads'), // for production build
+      rootPath: join(process.cwd(), 'uploads'),
       serveRoot: '/uploads',
     }),
     UserModule,
