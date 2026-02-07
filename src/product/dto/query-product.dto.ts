@@ -1,6 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsIn, IsInt, IsOptional, IsString, Min } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import {
+  IsIn,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
 
 export class QueryProductDto {
   @ApiProperty({ required: false, default: 1 })
@@ -31,4 +38,16 @@ export class QueryProductDto {
   @IsOptional()
   @IsIn(['asc', 'desc'])
   sortOrder?: 'asc' | 'desc' = 'desc';
+
+  @ApiProperty({
+    required: false,
+    description: 'Filter by category IDs (comma-separated)',
+    example: '1,2,3',
+    type: String,
+  })
+  @IsOptional()
+  @Transform(({ value }) => {
+    return typeof value === 'string' ? value.split(',').map(Number) : value;
+  })
+  category_ids?: number[];
 }

@@ -194,10 +194,23 @@ export class ProductService {
     store_id: number,
     query: QueryProductDto,
   ): Promise<ProductsPaginatedDto> {
-    const { page = 1, limit = 10, search, sortKey, sortOrder = 'desc' } = query;
+    const {
+      page = 1,
+      limit = 10,
+      search,
+      sortKey,
+      sortOrder = 'desc',
+      category_ids,
+    } = query;
     await new Promise((resolve) => setTimeout(resolve, 600));
 
-    const qb = this.buildProductQuery(store_id, search, sortKey, sortOrder);
+    const qb = this.buildProductQuery(
+      store_id,
+      search,
+      sortKey,
+      sortOrder,
+      category_ids,
+    );
 
     const [products, total] = await qb
       .skip((page - 1) * limit)
@@ -238,6 +251,7 @@ export class ProductService {
     search?: string,
     sortKey?: string,
     sortOrder: string = 'desc',
+    category_ids?: number[],
   ) {
     const qb = this.productRepository
       .createQueryBuilder('product')
@@ -248,6 +262,12 @@ export class ProductService {
     if (search?.trim()) {
       qb.andWhere('product.title ILIKE :search', {
         search: `%${search.trim()}%`,
+      });
+    }
+
+    if (category_ids && category_ids.length > 0) {
+      qb.andWhere('product.category_id IN (:...category_ids)', {
+        category_ids,
       });
     }
 
