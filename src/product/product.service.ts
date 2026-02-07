@@ -197,10 +197,9 @@ export class ProductService {
     const { page = 1, limit = 10, search, sortKey, sortOrder = 'desc' } = query;
     await new Promise((resolve) => setTimeout(resolve, 600));
 
-    const queryBuilder = this.buildProductQuery(search, sortKey, sortOrder);
+    const qb = this.buildProductQuery(store_id, search, sortKey, sortOrder);
 
-    const [products, total] = await queryBuilder
-      .where('product.store_id = :store_id', { store_id })
+    const [products, total] = await qb
       .skip((page - 1) * limit)
       .take(limit)
       .getManyAndCount();
@@ -235,18 +234,20 @@ export class ProductService {
   // ==================== ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ ЗАПРОСОВ ====================
 
   private buildProductQuery(
+    store_id: number,
     search?: string,
     sortKey?: string,
     sortOrder: string = 'desc',
   ) {
-    const queryBuilder = this.productRepository
+    const qb = this.productRepository
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.category', 'category')
-      .leftJoinAndSelect('product.color', 'color');
+      .leftJoinAndSelect('product.color', 'color')
+      .where('product.store_id = :store_id', { store_id }); // ✅ всегда
 
-    if (search) {
-      queryBuilder.where('product.title ILIKE :search', {
-        search: `%${search}%`,
+    if (search?.trim()) {
+      qb.andWhere('product.title ILIKE :search', {
+        search: `%${search.trim()}%`,
       });
     }
 
@@ -258,15 +259,15 @@ export class ProductService {
     };
 
     if (sortKey && sortMapping[sortKey]) {
-      queryBuilder.orderBy(
+      qb.orderBy(
         sortMapping[sortKey],
         sortOrder.toUpperCase() as 'ASC' | 'DESC',
       );
     }
 
-    queryBuilder.addOrderBy('product.updatedAt', 'DESC');
+    qb.addOrderBy('product.updatedAt', 'DESC');
 
-    return queryBuilder;
+    return qb;
   }
 
   private buildPaginatedResponse(
