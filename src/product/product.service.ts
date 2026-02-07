@@ -203,6 +203,7 @@ export class ProductService {
       category_ids,
       price_min,
       price_max,
+      color_id,
     } = query;
     await new Promise((resolve) => setTimeout(resolve, 900));
 
@@ -214,6 +215,7 @@ export class ProductService {
       category_ids,
       price_min,
       price_max,
+      color_id,
     );
 
     const [products, total] = await qb
@@ -258,6 +260,7 @@ export class ProductService {
     category_ids?: number[],
     price_min?: number,
     price_max?: number,
+    color_id?: number,
   ) {
     const qb = this.productRepository
       .createQueryBuilder('product')
@@ -297,6 +300,10 @@ export class ProductService {
 
     if (price_max !== undefined) {
       qb.andWhere('product.price <= :price_max', { price_max });
+    }
+
+    if (color_id !== undefined) {
+      qb.andWhere('product.color_id = :color_id', { color_id });
     }
 
     const sortMapping: Record<string, string> = {

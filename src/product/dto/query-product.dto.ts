@@ -53,4 +53,13 @@ export class QueryProductDto {
   @IsOptional()
   @Type(() => Number)
   price_max?: number;
+
+  @ApiProperty({
+    required: false,
+    description: 'Filter by color ID',
+    example: 1,
+  })
+  @IsOptional()
+  @Type(() => Number)
+  color_id?: number;
 }
