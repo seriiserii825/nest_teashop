@@ -202,7 +202,7 @@ export class ProductService {
       sortOrder = 'desc',
       category_ids,
     } = query;
-    await new Promise((resolve) => setTimeout(resolve, 600));
+    await new Promise((resolve) => setTimeout(resolve, 900));
 
     const qb = this.buildProductQuery(
       store_id,
