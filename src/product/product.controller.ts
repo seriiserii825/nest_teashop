@@ -19,6 +19,7 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiParam,
+  ApiQuery,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { AuthJwt } from 'src/auth/decorators/auth.jwt.decorator';
@@ -83,6 +84,36 @@ export class ProductController {
 
   @Get('store/:store_id')
   @ApiParam({ name: 'store_id', description: 'Store ID' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Page number',
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Number of items per page',
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    description: 'Search term for product title or description',
+    type: String,
+  })
+  @ApiQuery({
+    name: 'sortKey',
+    required: false,
+    description: 'Field to sort by (e.g., title, price)',
+    type: String,
+  })
+  @ApiQuery({
+    name: 'sortOrder',
+    required: false,
+    description: 'Sort order (asc or desc)',
+    type: String,
+  })
   @ApiOkResponse({ type: ProductsPaginatedDto })
   findAll(
     @Param('store_id') store_id: string,

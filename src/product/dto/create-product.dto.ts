@@ -1,4 +1,4 @@
-import { ApiProperty, PickType } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, PickType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   ArrayMinSize,
@@ -13,6 +13,7 @@ import {
 } from 'class-validator';
 import { OrderItemsBasicDto } from 'src/order-item/dto/create-order-item.dto';
 import { ReviewBasicDto } from 'src/review/dto/create-review.dto';
+import { QueryProductDto } from './query-product.dto';
 
 export class ProductBasicDto {
   @ApiProperty({ example: 1, description: 'Product ID' })
@@ -139,4 +140,7 @@ export class ProductsPaginatedDto {
   @ValidateNested()
   @Type(() => PaginationMetaDto)
   meta: PaginationMetaDto;
+
+  @ApiPropertyOptional({ type: () => QueryProductDto })
+  query: QueryProductDto;
 }

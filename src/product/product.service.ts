@@ -205,7 +205,7 @@ export class ProductService {
       .take(limit)
       .getManyAndCount();
 
-    return this.buildPaginatedResponse(products, total, page, limit);
+    return this.buildPaginatedResponse(products, total, page, limit, query);
   }
 
   async findOne(id: number, store_id: number) {
@@ -274,6 +274,7 @@ export class ProductService {
     total: number,
     page: number,
     limit: number,
+    query: QueryProductDto,
   ): ProductsPaginatedDto {
     return {
       data,
@@ -283,6 +284,7 @@ export class ProductService {
         limit,
         totalPages: Math.ceil(total / limit),
       },
+      query,
     };
   }
 }
