@@ -1,13 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import {
-  IsIn,
-  IsInt,
-  IsNumber,
-  IsOptional,
-  IsString,
-  Min,
-} from 'class-validator';
+import { IsIn, IsInt, IsOptional, IsString, Min } from 'class-validator';
 
 export class QueryProductDto {
   @ApiProperty({ required: false, default: 1 })
@@ -50,4 +43,14 @@ export class QueryProductDto {
     return typeof value === 'string' ? value.split(',').map(Number) : value;
   })
   category_ids?: number[];
+
+  @ApiProperty({ required: false, description: 'Minimum price', example: 10 })
+  @IsOptional()
+  @Type(() => Number)
+  price_min?: number;
+
+  @ApiProperty({ required: false, description: 'Maximum price', example: 10 })
+  @IsOptional()
+  @Type(() => Number)
+  price_max?: number;
 }

@@ -201,6 +201,8 @@ export class ProductService {
       sortKey,
       sortOrder = 'desc',
       category_ids,
+      price_min,
+      price_max,
     } = query;
     await new Promise((resolve) => setTimeout(resolve, 900));
 
@@ -210,6 +212,8 @@ export class ProductService {
       sortKey,
       sortOrder,
       category_ids,
+      price_min,
+      price_max,
     );
 
     const [products, total] = await qb
@@ -252,6 +256,8 @@ export class ProductService {
     sortKey?: string,
     sortOrder: string = 'desc',
     category_ids?: number[],
+    price_min?: number,
+    price_max?: number,
   ) {
     const qb = this.productRepository
       .createQueryBuilder('product')
@@ -269,6 +275,28 @@ export class ProductService {
       qb.andWhere('product.category_id IN (:...category_ids)', {
         category_ids,
       });
+    }
+
+    if (
+      price_min !== undefined &&
+      price_max !== undefined &&
+      price_min > price_max
+    ) {
+      throw new BadRequestException(
+        'Minimum price cannot be greater than maximum price.',
+      );
+    }
+
+    if (price_min !== undefined && price_min < 0) {
+      throw new BadRequestException('Minimum price cannot be negative.');
+    }
+
+    if (price_min !== undefined) {
+      qb.andWhere('product.price >= :price_min', { price_min });
+    }
+
+    if (price_max !== undefined) {
+      qb.andWhere('product.price <= :price_max', { price_max });
     }
 
     const sortMapping: Record<string, string> = {
