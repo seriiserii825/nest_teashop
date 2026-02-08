@@ -13,11 +13,13 @@ import { FileManagerService } from 'src/file-manager/file-manager.service';
 import { DataSource, QueryRunner, Repository } from 'typeorm';
 import {
   CreateProductDto,
+  ProductBasicDto,
   ProductsPaginatedDto,
 } from './dto/create-product.dto';
 import { QueryProductDto } from './dto/query-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
+import { Review } from '../review/entities/review.entity';
 
 @Injectable()
 export class ProductService {
@@ -218,10 +220,16 @@ export class ProductService {
       color_id,
     );
 
-    const [products, total] = await qb
+    const total = await qb.getCount();
+    const { entities, raw } = await qb
       .skip((page - 1) * limit)
       .take(limit)
-      .getManyAndCount();
+      .getRawAndEntities();
+
+    const products: ProductBasicDto[] = entities.map((product, index) => ({
+      ...product,
+      avg_rating: parseFloat(raw[index]?.avg_rating) || 0,
+    }));
 
     return this.buildPaginatedResponse(products, total, page, limit, query);
   }
@@ -266,6 +274,14 @@ export class ProductService {
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.category', 'category')
       .leftJoinAndSelect('product.color', 'color')
+      .addSelect(
+        (subQuery) =>
+          subQuery
+            .select('COALESCE(ROUND(AVG(review.rating)::numeric, 1), 0)')
+            .from(Review, 'review')
+            .where('review.product_id = product.id'),
+        'avg_rating',
+      )
       .where('product.store_id = :store_id', { store_id }); // ✅ всегда
 
     if (search?.trim()) {
@@ -326,7 +342,7 @@ export class ProductService {
   }
 
   private buildPaginatedResponse(
-    data: Product[],
+    data: ProductBasicDto[],
     total: number,
     page: number,
     limit: number,
