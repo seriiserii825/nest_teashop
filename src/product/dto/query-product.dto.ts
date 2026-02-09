@@ -65,7 +65,7 @@ export class QueryProductDto {
 
   @ApiProperty({
     required: false,
-    description: 'Filter by minimum star rating',
+    description: 'Filter by star rating',
     example: 4,
   })
   @IsOptional()

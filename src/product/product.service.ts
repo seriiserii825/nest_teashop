@@ -336,8 +336,8 @@ export class ProductService {
 
     if (stars !== undefined) {
       qb.andWhere(
-        `(SELECT COALESCE(ROUND(AVG(r.rating)::numeric, 1), 0) FROM review r WHERE r.product_id = product.id) >= :stars`,
-        { stars },
+        `(SELECT COALESCE(ROUND(AVG(r.rating)::numeric, 1), 0) FROM reviews r WHERE r.product_id = product.id) >= :starsMin AND (SELECT COALESCE(ROUND(AVG(r.rating)::numeric, 1), 0) FROM reviews r WHERE r.product_id = product.id) < :starsMax`,
+        { starsMin: stars, starsMax: stars + 1 },
       );
     }
 
