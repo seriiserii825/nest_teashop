@@ -206,6 +206,7 @@ export class ProductService {
       price_min,
       price_max,
       color_id,
+      stars,
     } = query;
     await new Promise((resolve) => setTimeout(resolve, 900));
 
@@ -218,6 +219,7 @@ export class ProductService {
       price_min,
       price_max,
       color_id,
+      stars,
     );
 
     const total = await qb.getCount();
@@ -270,6 +272,7 @@ export class ProductService {
     price_min?: number,
     price_max?: number,
     color_id?: number,
+    stars?: number,
   ) {
     const qb = this.productRepository
       .createQueryBuilder('product')
@@ -329,6 +332,13 @@ export class ProductService {
 
     if (color_id !== undefined) {
       qb.andWhere('product.color_id = :color_id', { color_id });
+    }
+
+    if (stars !== undefined) {
+      qb.andWhere(
+        `(SELECT COALESCE(ROUND(AVG(r.rating)::numeric, 1), 0) FROM review r WHERE r.product_id = product.id) >= :stars`,
+        { stars },
+      );
     }
 
     const sortMapping: Record<string, string> = {
