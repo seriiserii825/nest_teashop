@@ -229,6 +229,7 @@ export class ProductService {
     const products: ProductBasicDto[] = entities.map((product, index) => ({
       ...product,
       avg_rating: parseFloat(raw[index]?.avg_rating) || 0,
+      reviews_count: parseInt(raw[index]?.reviews_count, 10) || 0,
     }));
 
     return this.buildPaginatedResponse(products, total, page, limit, query);
@@ -281,6 +282,14 @@ export class ProductService {
             .from(Review, 'review')
             .where('review.product_id = product.id'),
         'avg_rating',
+      )
+      .addSelect(
+        (subQuery) =>
+          subQuery
+            .select('COUNT(review.id)')
+            .from(Review, 'review')
+            .where('review.product_id = product.id'),
+        'reviews_count',
       )
       .where('product.store_id = :store_id', { store_id }); // ✅ всегда
 

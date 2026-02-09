@@ -68,6 +68,10 @@ export class ProductBasicDto {
   @IsNumber({ maxDecimalPlaces: 1 })
   avg_rating?: number;
 
+  @ApiProperty({ example: 10, description: 'Total Reviews Count' })
+  @IsNumber()
+  reviews_count?: number;
+
   @ApiProperty({
     example: '2024-01-01T00:00:00Z',
     description: 'Creation Date',

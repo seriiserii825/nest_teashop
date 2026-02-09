@@ -62,4 +62,14 @@ export class QueryProductDto {
   @IsOptional()
   @Type(() => Number)
   color_id?: number;
+
+  @ApiProperty({
+    required: false,
+    description: 'Filter by minimum star rating',
+    example: 4,
+  })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  stars?: number;
 }
