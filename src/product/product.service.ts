@@ -344,8 +344,8 @@ export class ProductService {
     const sortMapping: Record<string, string> = {
       title: 'product.title',
       price: 'product.price',
-      color: 'color.name',
-      category: 'category.title',
+      stars: 'avg_rating',
+      createdAt: 'product.createdAt',
     };
 
     if (sort_key && sortMapping[sort_key]) {
@@ -353,9 +353,9 @@ export class ProductService {
         sortMapping[sort_key],
         sort_order.toUpperCase() as 'ASC' | 'DESC',
       );
+    } else {
+      qb.addOrderBy('product.updatedAt', 'DESC');
     }
-
-    qb.addOrderBy('product.updatedAt', 'DESC');
 
     return qb;
   }

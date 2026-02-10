@@ -22,9 +22,12 @@ export class QueryProductDto {
   @IsString()
   search?: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({
+    required: false,
+    enum: ['title', 'price', 'stars', 'createdAt'],
+  })
   @IsOptional()
-  @IsString()
+  @IsIn(['title', 'price', 'stars', 'createdAt'])
   sort_key?: string;
 
   @ApiProperty({ required: false, enum: ['asc', 'desc'], default: 'desc' })
