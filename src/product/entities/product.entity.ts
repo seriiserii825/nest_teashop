@@ -55,7 +55,7 @@ export class Product {
   @Column()
   color_id: number;
 
-  @ManyToOne(() => User, (user) => user.favorites)
+  @ManyToOne(() => User, (user) => user.products)
   @JoinColumn({ name: 'user_id' })
   user: User;
 

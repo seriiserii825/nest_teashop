@@ -36,7 +36,7 @@ export class User {
   reviews: Review[];
 
   @OneToMany(() => Product, (product) => product.user)
-  favorites: Product[];
+  products: Product[];
 
   @OneToMany(() => Order, (order) => order.user)
   orders: Order[];

@@ -37,14 +37,14 @@ export class UserService {
 
   findAll() {
     return this.userRepository.find({
-      relations: ['stores', 'favorites', 'orders'],
+      relations: ['stores', 'products', 'orders'],
     });
   }
 
   async findOne(id: number): Promise<UserBasicDto> {
     const user = await this.userRepository.findOne({
       where: { id },
-      relations: ['stores', 'favorites', 'orders'],
+      relations: ['stores', 'products', 'orders'],
     });
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
@@ -55,7 +55,7 @@ export class UserService {
   async findByEmail(email: string): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { email },
-      relations: ['stores', 'favorites', 'orders'],
+      relations: ['stores', 'products', 'orders'],
     });
     if (!user) {
       throw new NotFoundException(`User with email ${email} not found`);
@@ -66,7 +66,7 @@ export class UserService {
   async findByEmailOrNull(email: string): Promise<User | null> {
     return this.userRepository.findOne({
       where: { email },
-      relations: ['stores', 'favorites', 'orders'],
+      relations: ['stores', 'products', 'orders'],
     });
   }
 
@@ -96,14 +96,14 @@ export class UserService {
   // }
   //
   // // // Проверяем, есть ли продукт в избранном
-  // const productIndex = user.favorites.findIndex((p) => p.id === productId);
+  // const productIndex = user.products.findIndex((p) => p.id === productId);
   //
   // if (productIndex !== -1) {
   //   // Убираем из избранного
-  //   user.favorites.splice(productIndex, 1);
+  //   user.products.splice(productIndex, 1);
   // } else {
   //   // Добавляем в избранное
-  //   user.favorites.push(product);
+  //   user.products.push(product);
   // }
   //
   // // Сохраняем изменения
@@ -111,11 +111,11 @@ export class UserService {
 
   // return {
   //   message:
-  //     productIndex !== -1 ? 'Removed from favorites' : 'Added to favorites',
+  //     productIndex !== -1 ? 'Removed from products' : 'Added to products',
   //   isFavorite: productIndex === -1,
   // };
   //   return {
-  //     message: 'Removed from favorites',
+  //     message: 'Removed from products',
   //     isFavorite: true,
   //   };
   // }
