@@ -200,8 +200,8 @@ export class ProductService {
       page = 1,
       limit = 10,
       search,
-      sortKey,
-      sortOrder = 'desc',
+      sort_key,
+      sort_order = 'desc',
       category_ids,
       price_min,
       price_max,
@@ -213,8 +213,8 @@ export class ProductService {
     const qb = this.buildProductQuery(
       store_id,
       search,
-      sortKey,
-      sortOrder,
+      sort_key,
+      sort_order,
       category_ids,
       price_min,
       price_max,
@@ -266,8 +266,8 @@ export class ProductService {
   private buildProductQuery(
     store_id: number,
     search?: string,
-    sortKey?: string,
-    sortOrder: string = 'desc',
+    sort_key?: string,
+    sort_order: string = 'desc',
     category_ids?: number[],
     price_min?: number,
     price_max?: number,
@@ -348,10 +348,10 @@ export class ProductService {
       category: 'category.title',
     };
 
-    if (sortKey && sortMapping[sortKey]) {
+    if (sort_key && sortMapping[sort_key]) {
       qb.orderBy(
-        sortMapping[sortKey],
-        sortOrder.toUpperCase() as 'ASC' | 'DESC',
+        sortMapping[sort_key],
+        sort_order.toUpperCase() as 'ASC' | 'DESC',
       );
     }
 

@@ -25,12 +25,12 @@ export class QueryProductDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  sortKey?: string;
+  sort_key?: string;
 
   @ApiProperty({ required: false, enum: ['asc', 'desc'], default: 'desc' })
   @IsOptional()
   @IsIn(['asc', 'desc'])
-  sortOrder?: 'asc' | 'desc' = 'desc';
+  sort_order?: 'asc' | 'desc' = 'desc';
 
   @ApiProperty({
     required: false,
