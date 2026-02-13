@@ -110,12 +110,6 @@ export class UserService {
     const productIndex = user.favorite_products?.findIndex(
       (p) => p.id === product_id,
     );
-    if (productIndex === -1) {
-      throw new NotFoundException('Product not found in favorites');
-    }
-    if (!productIndex) {
-      throw new NotFoundException('Product not found in favorites');
-    }
 
     if (productIndex !== -1) {
       // Убираем из избранного
