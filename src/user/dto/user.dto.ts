@@ -15,6 +15,7 @@ import { ProductBasicDto } from 'src/product/dto/create-product.dto';
 import { ReviewBasicDto } from 'src/review/dto/create-review.dto';
 import { Review } from 'src/review/entities/review.entity';
 import { StoreBasicDto } from 'src/store/dto/store.dto';
+import { UserRole } from '../enums/user-role.enum';
 
 export class UserBasicDto {
   @ApiProperty()
@@ -37,10 +38,9 @@ export class UserBasicDto {
   @IsString()
   picture: string;
 
-  @ApiProperty({ example: 'user', description: 'Role of the user' })
-  @IsEnum(['user', 'admin'], { message: 'role must be either user or admin' })
-  @IsString()
-  role: string;
+  @ApiProperty({ example: 'user', description: 'Role of the user', enum: UserRole })
+  @IsEnum(UserRole, { message: 'role must be either user or admin' })
+  role: UserRole;
 
   @ApiProperty()
   createdAt: Date;
