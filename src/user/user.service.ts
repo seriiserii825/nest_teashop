@@ -8,11 +8,13 @@ import { hash } from 'argon2';
 import { Repository } from 'typeorm';
 import { CreateUserDto, UserBasicDto } from './dto/user.dto';
 import { User } from './entities/user.entity';
+import { ProductService } from 'src/product/product.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
+    private productService: ProductService,
   ) {}
   async create(input: CreateUserDto): Promise<UserBasicDto> {
     await this.userExists(input.email);
@@ -52,6 +54,17 @@ export class UserService {
     return user;
   }
 
+  async findByStoreFavorites(user_id: number): Promise<UserBasicDto> {
+    const user = await this.userRepository.findOne({
+      where: { id: user_id },
+      relations: { favorite_products: true },
+    });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${user_id} not found`);
+    }
+    return user;
+  }
+
   async findByEmail(email: string): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { email },
@@ -81,42 +94,38 @@ export class UserService {
     }
   }
 
-  // async toggleFavorite(
-  //   _productId: number,
-  //   userId: number,
-  // ): Promise<IUserFavorite> {
-  //TODO: implement after add Product entity
-  // // Проверяем существование продукта
-  // const product = await this.productRepository.findOne({
-  //   where: { id: productId },
-  // });
-  //
-  // if (!product) {
-  //   throw new NotFoundException('Product not found');
-  // }
-  //
-  // // // Проверяем, есть ли продукт в избранном
-  // const productIndex = user.products.findIndex((p) => p.id === productId);
-  //
-  // if (productIndex !== -1) {
-  //   // Убираем из избранного
-  //   user.products.splice(productIndex, 1);
-  // } else {
-  //   // Добавляем в избранное
-  //   user.products.push(product);
-  // }
-  //
-  // // Сохраняем изменения
-  // await this.userRepository.save(user);
+  async toggleFavorite(user_id: number, product_id: number, store_id: number) {
+    const user = await this.findByStoreFavorites(user_id);
+    // Проверяем существование продукта
+    const product = await this.productService.findOne(product_id, store_id);
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
 
-  // return {
-  //   message:
-  //     productIndex !== -1 ? 'Removed from products' : 'Added to products',
-  //   isFavorite: productIndex === -1,
-  // };
-  //   return {
-  //     message: 'Removed from products',
-  //     isFavorite: true,
-  //   };
-  // }
+    if (!user.favorite_products) {
+      throw new NotFoundException('User has no favorite products');
+    }
+
+    // // Проверяем, есть ли продукт в избранном
+    const productIndex = user.favorite_products?.findIndex(
+      (p) => p.id === product_id,
+    );
+
+    if (productIndex !== -1) {
+      // Убираем из избранного
+      user.favorite_products?.splice(productIndex, 1);
+    } else {
+      // Добавляем в избранное
+      user.favorite_products?.push(product);
+    }
+
+    // Сохраняем изменения
+    await this.userRepository.save(user);
+
+    return {
+      message:
+        productIndex !== -1 ? 'Removed from favorites' : 'Added to favorites',
+      isFavorite: productIndex === -1,
+    };
+  }
 }

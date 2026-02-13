@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param, Patch } from '@nestjs/common';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { AuthJwt } from 'src/auth/decorators/auth.jwt.decorator';
 import { CurrentUser } from './decorators/user.decorator';
@@ -23,11 +23,12 @@ export class UserController {
     return this.userService.findOne(+user.id);
   }
 
-  // @Patch('favorites/:productId')
-  // async toggleFavorite(
-  //   @CurrentUser('id') userId: number,
-  //   @Param('productId') productId: string,
-  // ) {
-  //   return this.userService.toggleFavorite(+productId, userId);
-  // }
+  @Patch('favorites/:product_id/store/:store_id')
+  async toggleFavorite(
+    @CurrentUser('id') user_id: number,
+    @Param('product_id') product_id: string,
+    @Param('store_id') store_id: string,
+  ) {
+    return this.userService.toggleFavorite(+user_id, +product_id, +store_id);
+  }
 }

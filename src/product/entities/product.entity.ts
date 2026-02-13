@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -67,6 +68,9 @@ export class Product {
 
   @OneToMany(() => OrderItem, (orderItem) => orderItem.product)
   order_items: OrderItem[];
+
+  @ManyToMany(() => User, (user) => user.favorite_products)
+  favorited_by: User[];
 
   @CreateDateColumn()
   createdAt: Date;

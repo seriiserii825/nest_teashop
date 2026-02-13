@@ -11,6 +11,7 @@ import { unlink } from 'fs/promises';
 import { join } from 'path';
 import { FileManagerService } from 'src/file-manager/file-manager.service';
 import { DataSource, QueryRunner, Repository } from 'typeorm';
+import { Review } from '../review/entities/review.entity';
 import {
   CreateProductDto,
   ProductBasicDto,
@@ -19,7 +20,6 @@ import {
 import { QueryProductDto } from './dto/query-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
-import { Review } from '../review/entities/review.entity';
 
 @Injectable()
 export class ProductService {
