@@ -38,7 +38,11 @@ export class UserBasicDto {
   @IsString()
   picture: string;
 
-  @ApiProperty({ example: 'user', description: 'Role of the user', enum: UserRole })
+  @ApiProperty({
+    example: 'user',
+    description: 'Role of the user',
+    enum: UserRole,
+  })
   @IsEnum(UserRole, { message: 'role must be either user or admin' })
   role: UserRole;
 
@@ -50,6 +54,7 @@ export class UserBasicDto {
 
   @ApiProperty({
     type: () => ReviewBasicDto,
+    isArray: true,
     description: 'List of reviews made by the user',
   })
   @ValidateNested()
@@ -59,6 +64,7 @@ export class UserBasicDto {
 
   @ApiProperty({
     type: () => OrderBasicDto,
+    isArray: true,
     description: 'List of orders made by the user',
   })
   @ValidateNested()
@@ -68,6 +74,7 @@ export class UserBasicDto {
 
   @ApiProperty({
     type: () => StoreBasicDto,
+    isArray: true,
     description: 'List of stores owned by the user',
   })
   @ValidateNested()
@@ -77,6 +84,7 @@ export class UserBasicDto {
 
   @ApiProperty({
     type: () => ProductBasicDto,
+    isArray: true,
     description: 'List of favorite products',
   })
   @ValidateNested()
