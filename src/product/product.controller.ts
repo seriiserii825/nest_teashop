@@ -11,7 +11,6 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { memoryStorage } from 'multer';
 import {
   ApiBody,
   ApiConflictResponse,
@@ -22,18 +21,18 @@ import {
   ApiQuery,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { memoryStorage } from 'multer';
+import { Admin } from 'src/auth/decorators/admin.decorator';
 import { AuthJwt } from 'src/auth/decorators/auth.jwt.decorator';
 import { CurrentUser } from 'src/user/decorators/user.decorator';
 import {
   CreateProductDto,
   ProductBasicDto,
-  ProductFullDto,
   ProductsPaginatedDto,
 } from './dto/create-product.dto';
 import { QueryProductDto } from './dto/query-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductService } from './product.service';
-import { Admin } from 'src/auth/decorators/admin.decorator';
 
 @ApiUnauthorizedResponse({ description: 'Unauthorized' })
 @Controller('products')

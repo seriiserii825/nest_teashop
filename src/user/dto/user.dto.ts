@@ -47,6 +47,41 @@ export class UserBasicDto {
 
   @ApiProperty()
   updatedAt: Date;
+
+  @ApiProperty({
+    type: () => ReviewBasicDto,
+    description: 'List of reviews made by the user',
+  })
+  @ValidateNested()
+  @IsOptional()
+  @Type(() => ReviewBasicDto)
+  reviews?: Review[];
+
+  @ApiProperty({
+    type: () => OrderBasicDto,
+    description: 'List of orders made by the user',
+  })
+  @ValidateNested()
+  @IsOptional()
+  @Type(() => OrderBasicDto)
+  orders?: OrderBasicDto[];
+
+  @ApiProperty({
+    type: () => StoreBasicDto,
+    description: 'List of stores owned by the user',
+  })
+  @ValidateNested()
+  @IsOptional()
+  @Type(() => StoreBasicDto)
+  store?: StoreBasicDto[];
+
+  @ApiProperty({
+    type: () => ProductBasicDto,
+    description: 'List of favorite products',
+  })
+  @ValidateNested()
+  @Type(() => ProductBasicDto)
+  favorite_products?: ProductBasicDto[];
 }
 
 export class CreateUserDto extends PickType(UserBasicDto, ['name', 'email']) {
@@ -63,38 +98,4 @@ export class UserFavoriteDto {
 
   @ApiProperty()
   isFavorite: boolean;
-}
-
-export class UserFullDto extends UserBasicDto {
-  @ApiProperty({
-    type: () => ReviewBasicDto,
-    description: 'List of reviews made by the user',
-  })
-  @ValidateNested()
-  @Type(() => ReviewBasicDto)
-  reviews: Review[];
-
-  @ApiProperty({
-    type: () => ProductBasicDto,
-    description: 'List of favorite products',
-  })
-  @ValidateNested()
-  @Type(() => ProductBasicDto)
-  favorites: ProductBasicDto[];
-
-  @ApiProperty({
-    type: () => OrderBasicDto,
-    description: 'List of orders made by the user',
-  })
-  @ValidateNested()
-  @Type(() => OrderBasicDto)
-  orders: OrderBasicDto[];
-
-  @ApiProperty({
-    type: () => StoreBasicDto,
-    description: 'List of stores owned by the user',
-  })
-  @ValidateNested()
-  @Type(() => StoreBasicDto)
-  store: StoreBasicDto[];
 }

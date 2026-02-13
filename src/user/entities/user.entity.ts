@@ -2,6 +2,8 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -43,6 +45,16 @@ export class User {
 
   @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
   role: UserRole;
+
+  @ManyToMany(() => Product, (product) => product.favorited_by, {
+    cascade: false,
+  })
+  @JoinTable({
+    name: 'user_favorite_products', // join table name
+    joinColumn: { name: 'user_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'product_id', referencedColumnName: 'id' },
+  })
+  favorite_products: Product[];
 
   @CreateDateColumn()
   createdAt: Date;
