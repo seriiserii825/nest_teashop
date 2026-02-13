@@ -136,6 +136,14 @@ export class ProductController {
     return this.productService.findOne(+id, +store_id);
   }
 
+  @Get(':id')
+  @ApiParam({ name: 'id', description: 'Product ID' })
+  @ApiNotFoundResponse({ description: 'Product not found' })
+  @ApiOkResponse({ type: ProductBasicDto })
+  getProduct(@Param('id') id: string) {
+    return this.productService.getProduct(+id);
+  }
+
   @Admin()
   @AuthJwt()
   @Delete(':id/store/:store_id')

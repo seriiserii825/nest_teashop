@@ -6,7 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { hash } from 'argon2';
 import { Repository } from 'typeorm';
-import { CreateUserDto, UserBasicDto } from './dto/user.dto';
+import { CreateUserDto, UserBasicDto, UserFavoriteDto } from './dto/user.dto';
 import { User } from './entities/user.entity';
 import { ProductService } from 'src/product/product.service';
 
@@ -94,10 +94,13 @@ export class UserService {
     }
   }
 
-  async toggleFavorite(user_id: number, product_id: number, store_id: number) {
+  async toggleFavorite(
+    user_id: number,
+    product_id: number,
+  ): Promise<UserFavoriteDto> {
     const user = await this.findByStoreFavorites(user_id);
     // Проверяем существование продукта
-    const product = await this.productService.findOne(product_id, store_id);
+    const product = await this.productService.findOne(product_id);
     if (!product) {
       throw new NotFoundException('Product not found');
     }

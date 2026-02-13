@@ -237,9 +237,9 @@ export class ProductService {
     return this.buildPaginatedResponse(products, total, page, limit, query);
   }
 
-  async findOne(id: number, store_id: number) {
+  async findOne(id: number, store_id?: number) {
     const product = await this.productRepository.findOne({
-      where: { id, store_id },
+      where: { id, ...(store_id ? { store_id } : {}) },
     });
 
     if (!product) {
@@ -247,6 +247,41 @@ export class ProductService {
     }
 
     return product;
+  }
+
+  async getProduct(id: number) {
+    const product = await this.productRepository
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.category', 'category')
+      .leftJoinAndSelect('product.color', 'color')
+      .addSelect(
+        (subQuery) =>
+          subQuery
+            .select('COALESCE(ROUND(AVG(review.rating)::numeric, 1), 0)')
+            .from(Review, 'review')
+            .where('review.product_id = product.id'),
+        'avg_rating',
+      )
+      .addSelect(
+        (subQuery) =>
+          subQuery
+            .select('COUNT(review.id)')
+            .from(Review, 'review')
+            .where('review.product_id = product.id'),
+        'reviews_count',
+      )
+      .where('product.id = :id', { id })
+      .getRawAndEntities();
+
+    if (!product.entities[0]) {
+      throw new NotFoundException(`Product with ID '${id}' not found.`);
+    }
+
+    return {
+      ...product.entities[0],
+      avg_rating: parseFloat(product.raw[0]?.avg_rating) || 0,
+      reviews_count: parseInt(product.raw[0]?.reviews_count) || 0,
+    };
   }
 
   async checkDuplicateTitleInStore(store_id: number, title: string) {
