@@ -80,7 +80,7 @@ export class UserBasicDto {
   @ValidateNested()
   @IsOptional()
   @Type(() => StoreBasicDto)
-  store?: StoreBasicDto[];
+  stores?: StoreBasicDto[];
 
   @ApiProperty({
     type: () => ProductBasicDto,
