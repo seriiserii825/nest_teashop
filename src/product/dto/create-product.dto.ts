@@ -14,6 +14,7 @@ import {
 import { OrderItemsBasicDto } from 'src/order-item/dto/create-order-item.dto';
 import { ReviewBasicDto } from 'src/review/dto/create-review.dto';
 import { QueryProductDto } from './query-product.dto';
+import { StoreBasicDto } from 'src/store/dto/store.dto';
 
 export class ProductBasicDto {
   @ApiProperty({ example: 1, description: 'Product ID' })
@@ -85,17 +86,7 @@ export class ProductBasicDto {
   })
   @IsDate()
   updatedAt: Date;
-}
 
-export class CreateProductDto extends PickType(ProductBasicDto, [
-  'title',
-  'description',
-  'price',
-  'category_id',
-  'color_id',
-]) {}
-
-export class ProductFullDto extends ProductBasicDto {
   @ApiProperty({
     type: () => [ReviewBasicDto],
     description: 'Product reviews',
@@ -117,7 +108,23 @@ export class ProductFullDto extends ProductBasicDto {
   @Type(() => OrderItemsBasicDto)
   @IsOptional()
   order_items?: OrderItemsBasicDto[];
+
+  @ApiProperty({
+    type: () => StoreBasicDto,
+    description: 'Store information',
+    required: false,
+  })
+  @IsOptional()
+  store?: StoreBasicDto;
 }
+
+export class CreateProductDto extends PickType(ProductBasicDto, [
+  'title',
+  'description',
+  'price',
+  'category_id',
+  'color_id',
+]) {}
 
 class PaginationMetaDto {
   @ApiProperty({ example: 100, description: 'Total number of items' })
