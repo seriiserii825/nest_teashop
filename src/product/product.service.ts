@@ -120,6 +120,17 @@ export class ProductService {
     return this.productRepository.delete(id);
   }
 
+  async searchProducts(search: string): Promise<ProductBasicDto[]> {
+    if (!search || search.trim() === '') {
+      throw new BadRequestException('Search term cannot be empty.');
+    }
+    return this.productRepository
+      .createQueryBuilder('product')
+      .where('product.title ILIKE :search', { search: `%${search}%` })
+      .orWhere('product.description ILIKE :search', { search: `%${search}%` })
+      .getMany();
+  }
+
   // ==================== ПРИВАТНЫЕ ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ ====================
 
   /**

@@ -127,6 +127,21 @@ export class ProductController {
     return this.productService.findAllArray(+store_id);
   }
 
+  @Get('search-products')
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    description: 'Search term for product title or description',
+    type: String,
+  })
+  @ApiNotFoundResponse({
+    description: 'No products found matching the search criteria',
+  })
+  @ApiOkResponse({ type: [ProductBasicDto] })
+  findProducts(@Query('search') search: string) {
+    return this.productService.searchProducts(search);
+  }
+
   @Get(':id/store/:store_id')
   @ApiParam({ name: 'id', description: 'Product ID' })
   @ApiParam({ name: 'store_id', description: 'Store ID' })
