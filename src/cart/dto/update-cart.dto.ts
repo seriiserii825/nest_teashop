@@ -1,4 +1,7 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateCartDto } from './create-cart.dto';
+import { IsInt, IsPositive } from 'class-validator';
 
-export class UpdateCartDto extends PartialType(CreateCartDto) {}
+export class UpdateCartItemDto {
+  @IsInt()
+  @IsPositive()
+  quantity: number;
+}

@@ -1,1 +1,52 @@
-export class CreateCartDto {}
+import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import {
+  IsArray,
+  IsDate,
+  IsInt,
+  IsOptional,
+  IsPositive,
+  ValidateNested,
+} from 'class-validator';
+import { UserBasicDto } from 'src/user/dto/user.dto';
+import { CartItemDto } from './cart-item.dto';
+
+export class CartBaseDto {
+  @ApiProperty({ description: 'The ID of the cart item' })
+  @IsInt()
+  id: number;
+
+  @ApiProperty({ description: 'The user who owns the cart' })
+  @Type(() => UserBasicDto)
+  user: UserBasicDto;
+
+  @ApiProperty({ description: 'The items in the cart' })
+  @Type(() => CartItemDto)
+  @IsArray()
+  @ValidateNested({ each: true })
+  @IsOptional()
+  items?: CartItemDto[];
+
+  @ApiProperty({
+    example: '2024-01-01T00:00:00Z',
+    description: 'Last Update Date',
+  })
+  @IsDate()
+  updatedAt: Date;
+
+  @ApiProperty({
+    example: '2024-01-01T00:00:00Z',
+    description: 'Creation Date',
+  })
+  @IsDate()
+  createdAt: Date;
+}
+
+export class AddCartItemDto {
+  @IsInt()
+  product_id: number;
+
+  @IsInt()
+  @IsPositive()
+  quantity: number = 1;
+}
