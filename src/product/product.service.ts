@@ -124,8 +124,15 @@ export class ProductService {
     if (!search || search.trim() === '') {
       throw new BadRequestException('Search term cannot be empty.');
     }
+    // return with relation store
+    // return this.productRepository
+    //   .createQueryBuilder('product')
+    //   .where('product.title ILIKE :search', { search: `%${search}%` })
+    //   .orWhere('product.description ILIKE :search', { search: `%${search}%` })
+    //   .getMany();
     return this.productRepository
       .createQueryBuilder('product')
+      .leftJoinAndSelect('product.store', 'store')
       .where('product.title ILIKE :search', { search: `%${search}%` })
       .orWhere('product.description ILIKE :search', { search: `%${search}%` })
       .getMany();
