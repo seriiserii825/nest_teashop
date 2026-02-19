@@ -1,10 +1,13 @@
+import { Cart } from '../../cart/entities/cart.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -55,6 +58,13 @@ export class User {
     inverseJoinColumn: { name: 'product_id', referencedColumnName: 'id' },
   })
   favorite_products: Product[];
+
+  @OneToOne(() => Cart, (cart) => cart.user, {
+    cascade: true, // create/update/delete cart together with user
+    nullable: true, // optional: allow users without cart (rare)
+  })
+  @JoinColumn({ name: 'cart_id' })
+  cart: Cart;
 
   @CreateDateColumn()
   createdAt: Date;

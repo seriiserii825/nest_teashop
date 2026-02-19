@@ -14,6 +14,7 @@ import { AuthModule } from './auth/auth.module';
 import { StatisticModule } from './statistic/statistic.module';
 import { FileManagerModule } from './file-manager/file-manager.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { CartModule } from './cart/cart.module';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
     AuthModule,
     StatisticModule,
     FileManagerModule,
+    CartModule,
   ],
 })
 export class AppModule {}
