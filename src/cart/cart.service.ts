@@ -93,7 +93,9 @@ export class CartService {
       where: { user: { id: user_id } },
       relations: { items: true },
     });
-    if (!cart) return;
+    if (!cart) throw new NotFoundException('Cart not found');
+    if (cart.items.length === 0)
+      throw new NotFoundException('Cart is already empty');
     await this.cartItemRepo.remove(cart.items);
   }
 }
