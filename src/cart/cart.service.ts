@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { AddCartItemDto } from './dto/create-cart.dto';
+import { AddCartItemDto, CartBaseDto } from './dto/create-cart.dto';
 import { UpdateCartItemDto } from './dto/update-cart.dto';
 import { CartItem } from './entities/cart-item.entity';
 import { Cart } from './entities/cart.entity';
@@ -27,7 +27,7 @@ export class CartService {
     return cart;
   }
 
-  async getCart(user_id: number): Promise<Cart> {
+  async getCart(user_id: number): Promise<CartBaseDto> {
     const cart = await this.cartRepo.findOne({
       where: { user: { id: user_id } },
       relations: { items: { product: true } },

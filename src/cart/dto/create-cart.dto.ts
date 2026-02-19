@@ -43,9 +43,14 @@ export class CartBaseDto {
 }
 
 export class AddCartItemDto {
+  @ApiProperty({ description: 'The ID of the product to add' })
   @IsInt()
   product_id: number;
 
+  @ApiProperty({
+    description: 'The quantity of the product to add',
+    default: 1,
+  })
   @IsInt()
   @IsPositive()
   quantity: number = 1;
