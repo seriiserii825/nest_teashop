@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsArray,
@@ -20,6 +20,7 @@ export class CartBaseDto {
     isArray: true,
     description: 'List of cart items',
   })
+  @ApiPropertyOptional()
   @Type(() => CartItemDto)
   @IsArray()
   @ValidateNested({ each: true })
