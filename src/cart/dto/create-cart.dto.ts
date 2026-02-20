@@ -15,7 +15,11 @@ export class CartBaseDto {
   @IsInt()
   id: number;
 
-  @ApiProperty({ description: 'The items in the cart' })
+  @ApiProperty({
+    type: () => CartItemDto,
+    isArray: true,
+    description: 'List of cart items',
+  })
   @Type(() => CartItemDto)
   @IsArray()
   @ValidateNested({ each: true })
