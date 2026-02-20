@@ -10,6 +10,7 @@ import {
   MinLength,
   ValidateNested,
 } from 'class-validator';
+import { CartBaseDto } from 'src/cart/dto/create-cart.dto';
 import { OrderBasicDto } from 'src/order/dto/create-order.dto';
 import { ProductBasicDto } from 'src/product/dto/create-product.dto';
 import { ReviewBasicDto } from 'src/review/dto/create-review.dto';
@@ -90,6 +91,14 @@ export class UserBasicDto {
   @ValidateNested()
   @Type(() => ProductBasicDto)
   favorite_products?: ProductBasicDto[];
+
+  @ApiProperty({
+    type: () => CartBaseDto,
+    description: 'Cart of the user',
+  })
+  @IsOptional()
+  @Type(() => CartBaseDto)
+  cart?: CartBaseDto;
 }
 
 export class CreateUserDto extends PickType(UserBasicDto, ['name', 'email']) {

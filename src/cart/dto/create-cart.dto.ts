@@ -8,17 +8,12 @@ import {
   IsPositive,
   ValidateNested,
 } from 'class-validator';
-import { UserBasicDto } from 'src/user/dto/user.dto';
 import { CartItemDto } from './cart-item.dto';
 
 export class CartBaseDto {
   @ApiProperty({ description: 'The ID of the cart item' })
   @IsInt()
   id: number;
-
-  @ApiProperty({ description: 'The user who owns the cart' })
-  @Type(() => UserBasicDto)
-  user: UserBasicDto;
 
   @ApiProperty({ description: 'The items in the cart' })
   @Type(() => CartItemDto)
