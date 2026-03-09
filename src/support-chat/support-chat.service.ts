@@ -68,13 +68,10 @@ export class SupportChatService {
     });
   }
 
-  // For admin: list all conversations with last message timestamp
   async getAllConversations(): Promise<Conversation[]> {
-    const conversations = await this.conversationRepo.find({
-      relations: ['user'],
+    return this.conversationRepo.find({
+      relations: ['user', 'messages'],
       order: { updatedAt: 'DESC' },
     });
-    console.log(conversations, 'conversations');
-    return conversations;
   }
 }

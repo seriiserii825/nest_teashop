@@ -46,6 +46,9 @@ export class ConversationDto {
   @ApiProperty({ example: false, description: 'True if the user is anonymous' })
   isAnonymous: boolean;
 
+  @ApiProperty({ type: () => [ConversationMessageDto] })
+  messages: ConversationMessageDto[];
+
   @ApiProperty({ example: '2024-01-01T00:00:00.000Z' })
   createdAt: Date;
 
