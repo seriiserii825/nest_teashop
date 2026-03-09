@@ -15,7 +15,7 @@ async function bootstrap() {
     origin:
       process.env.NODE_ENV === 'production'
         ? 'https://example.com'
-        : process.env.CLIENT_URL_DEVELOPMENT,
+        : process.env.CLIENT_URL,
     credentials: true,
     exposeHeaders: ['set-cookie'],
   });
