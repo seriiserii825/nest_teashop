@@ -22,7 +22,6 @@ interface SocketMeta {
 }
 
 @WebSocketGateway({
-  namespace: '/support',
   cors: {
     origin: (
       origin: string,
