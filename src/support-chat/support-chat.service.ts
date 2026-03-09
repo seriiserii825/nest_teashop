@@ -70,9 +70,11 @@ export class SupportChatService {
 
   // For admin: list all conversations with last message timestamp
   async getAllConversations(): Promise<Conversation[]> {
-    return this.conversationRepo.find({
+    const conversations = await this.conversationRepo.find({
       relations: ['user'],
       order: { updatedAt: 'DESC' },
     });
+    console.log(conversations, 'conversations');
+    return conversations;
   }
 }
