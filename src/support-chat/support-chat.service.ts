@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { TelegramService } from 'src/telegram/telegram.service';
 import { UserBasicDto } from 'src/user/dto/user.dto';
 import { Repository } from 'typeorm';
 import { ConversationMessage } from './entities/conversation-message.entity';
@@ -12,6 +13,7 @@ export class SupportChatService {
     private readonly conversationRepo: Repository<Conversation>,
     @InjectRepository(ConversationMessage)
     private readonly messageRepo: Repository<ConversationMessage>,
+    private readonly telegramService: TelegramService,
   ) {}
 
   async findOrCreateByUser(user: UserBasicDto): Promise<Conversation> {
@@ -22,6 +24,8 @@ export class SupportChatService {
 
     const conv = this.conversationRepo.create({
       user,
+      guestName: user.name,
+      guestEmail: user.email,
       isAnonymous: false,
     });
     return this.conversationRepo.save(conv);
@@ -57,7 +61,14 @@ export class SupportChatService {
     isFromAdmin: boolean,
   ): Promise<ConversationMessage> {
     const msg = this.messageRepo.create({ conversation, text, isFromAdmin });
-    return this.messageRepo.save(msg);
+    const saved = await this.messageRepo.save(msg);
+
+    const telegramText = isFromAdmin
+      ? `                         ← Admin\n                    ${text}`
+      : `👤 ${conversation.isAnonymous ? (conversation.guestName ?? 'Guest') : (conversation.guestEmail ?? 'User')}:\n${text}`;
+    await this.telegramService.sendMessageToUser(telegramText);
+
+    return saved;
   }
 
   async getMessages(conversationId: string): Promise<ConversationMessage[]> {

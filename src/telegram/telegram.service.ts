@@ -16,7 +16,11 @@ export class TelegramService implements OnModuleInit {
   }
 
   async onModuleInit() {
-    await this.sendMessageToUser('Bot started or new bot');
+    try {
+      await this.sendMessageToUser('Bot started or new bot');
+    } catch (err) {
+      this.logger.error('Failed to send startup message', err);
+    }
   }
 
   async sendMessageToUser(message: string) {

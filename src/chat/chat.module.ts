@@ -5,9 +5,15 @@ import { UserModule } from 'src/user/user.module';
 import { ChatGateway } from './chat.gateway';
 import { ChatService } from './chat.service';
 import { Message } from './entities/message.entity';
+import { TelegramModule } from 'src/telegram/telegram.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Message]), AuthModule, UserModule],
+  imports: [
+    TypeOrmModule.forFeature([Message]),
+    AuthModule,
+    UserModule,
+    TelegramModule,
+  ],
   providers: [ChatGateway, ChatService],
 })
 export class ChatModule {}
