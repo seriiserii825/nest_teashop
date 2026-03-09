@@ -79,10 +79,27 @@ export class SupportChatService {
     });
   }
 
-  async getAllConversations(): Promise<Conversation[]> {
-    return this.conversationRepo.find({
+  async markConversationRead(conversationId: string): Promise<void> {
+    await this.messageRepo.update(
+      { conversation: { id: conversationId }, isFromAdmin: false, isRead: false },
+      { isRead: true },
+    );
+  }
+
+  async getUnreadCount(conversationId: string): Promise<number> {
+    return this.messageRepo.count({
+      where: { conversation: { id: conversationId }, isFromAdmin: false, isRead: false },
+    });
+  }
+
+  async getAllConversations(): Promise<(Conversation & { unreadCount: number })[]> {
+    const convs = await this.conversationRepo.find({
       relations: ['user', 'messages'],
       order: { updatedAt: 'DESC' },
     });
+    return convs.map((conv) => ({
+      ...conv,
+      unreadCount: conv.messages.filter((m) => !m.isFromAdmin && !m.isRead).length,
+    }));
   }
 }

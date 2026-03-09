@@ -145,9 +145,25 @@ export class SupportChatGateway
       false,
     );
 
-    const payload = { conversationId: meta.conversation.id, message };
-    this.server.to(`conv:${meta.conversation.id}`).emit('newMessage', payload);
+    const conversationId = meta.conversation.id;
+    const payload = { conversationId, message };
+    this.server.to(`conv:${conversationId}`).emit('newMessage', payload);
     this.server.to(ADMIN_ROOM).emit('newMessage', payload);
+
+    const unreadCount = await this.supportChatService.getUnreadCount(conversationId);
+    this.server.to(ADMIN_ROOM).emit('unreadCount', { conversationId, unreadCount });
+  }
+
+  @SubscribeMessage('markRead')
+  async handleMarkRead(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() conversationId: string,
+  ) {
+    const meta = this.socketMeta.get(client.id);
+    if (!meta?.isAdmin) return;
+
+    await this.supportChatService.markConversationRead(conversationId);
+    this.server.to(ADMIN_ROOM).emit('unreadCount', { conversationId, unreadCount: 0 });
   }
 
   @SubscribeMessage('adminReply')

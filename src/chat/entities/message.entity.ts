@@ -23,6 +23,9 @@ export class Message {
   @Column({ default: false })
   isAnonymous: boolean;
 
+  @Column({ default: false })
+  isRead: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 }

@@ -9,6 +9,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { UserRole } from 'src/user/enums/user-role.enum';
 import { UserService } from 'src/user/user.service';
 import { ChatService } from './chat.service';
 
@@ -16,6 +17,7 @@ interface ChatUser {
   id: number;
   name: string;
   email: string;
+  isAdmin: boolean;
 }
 
 @WebSocketGateway({
@@ -71,12 +73,19 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (userId) {
       try {
         const user = await this.userService.findOne(userId);
+        const isAdmin = user.role === UserRole.ADMIN;
         this.connectedUsers.set(client.id, {
           id: user.id,
           name: user.name ?? user.email,
           email: user.email,
+          isAdmin,
         });
         console.log(`Connected: ${client.id} | ${user.email}`);
+
+        if (isAdmin) {
+          const unreadCount = await this.chatService.getUnreadCount();
+          client.emit('unreadCount', unreadCount);
+        }
       } catch {
         console.log(`Connected: ${client.id} | user ${userId} not found`);
       }
@@ -108,5 +117,25 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
 
     this.server.emit('newMessage', message);
+
+    const unreadCount = await this.chatService.getUnreadCount();
+    this.broadcastToAdmins('unreadCount', unreadCount);
+  }
+
+  @SubscribeMessage('markRead')
+  async handleMarkRead(@ConnectedSocket() client: Socket) {
+    const user = this.connectedUsers.get(client.id);
+    if (!user?.isAdmin) return;
+
+    await this.chatService.markAllAsRead();
+    this.broadcastToAdmins('unreadCount', 0);
+  }
+
+  private broadcastToAdmins(event: string, data: unknown) {
+    for (const [socketId, user] of this.connectedUsers.entries()) {
+      if (user.isAdmin) {
+        this.server.to(socketId).emit(event, data);
+      }
+    }
   }
 }

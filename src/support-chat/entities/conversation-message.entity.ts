@@ -25,6 +25,9 @@ export class ConversationMessage {
   @Column({ default: false })
   isFromAdmin: boolean;
 
+  @Column({ default: false })
+  isRead: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 }

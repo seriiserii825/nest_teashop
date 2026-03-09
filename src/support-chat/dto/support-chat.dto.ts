@@ -49,6 +49,9 @@ export class ConversationDto {
   @ApiProperty({ type: () => [ConversationMessageDto] })
   messages: ConversationMessageDto[];
 
+  @ApiProperty({ example: 3, description: 'Number of unread messages from user' })
+  unreadCount: number;
+
   @ApiProperty({ example: '2024-01-01T00:00:00.000Z' })
   createdAt: Date;
 

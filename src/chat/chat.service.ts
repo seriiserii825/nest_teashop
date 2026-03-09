@@ -35,4 +35,12 @@ export class ChatService {
       take: 50,
     });
   }
+
+  async getUnreadCount(): Promise<number> {
+    return this.messageRepository.count({ where: { isRead: false } });
+  }
+
+  async markAllAsRead(): Promise<void> {
+    await this.messageRepository.update({ isRead: false }, { isRead: true });
+  }
 }
