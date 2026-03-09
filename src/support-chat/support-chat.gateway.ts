@@ -123,7 +123,9 @@ export class SupportChatGateway
 
     const messages = await this.supportChatService.getMessages(conversation.id);
     client.emit('history', { conversationId: conversation.id, messages });
-    console.log(`[SupportChat] Guest connected: ${client.id} | conv: ${conversation.id}`);
+    console.log(
+      `[SupportChat] Guest connected: ${client.id} | conv: ${conversation.id}`,
+    );
   }
 
   handleDisconnect(client: Socket) {

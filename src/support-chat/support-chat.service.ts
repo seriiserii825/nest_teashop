@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UserBasicDto } from 'src/user/dto/user.dto';
 import { Repository } from 'typeorm';
-import { Conversation } from './entities/conversation.entity';
 import { ConversationMessage } from './entities/conversation-message.entity';
-import { User } from '../user/entities/user.entity';
+import { Conversation } from './entities/conversation.entity';
 
 @Injectable()
 export class SupportChatService {
@@ -14,7 +14,7 @@ export class SupportChatService {
     private readonly messageRepo: Repository<ConversationMessage>,
   ) {}
 
-  async findOrCreateByUser(user: User): Promise<Conversation> {
+  async findOrCreateByUser(user: UserBasicDto): Promise<Conversation> {
     const existing = await this.conversationRepo.findOne({
       where: { user: { id: user.id } },
     });
@@ -31,12 +31,17 @@ export class SupportChatService {
     guestName?: string,
     guestEmail?: string,
   ): Promise<Conversation> {
-    const conv = this.conversationRepo.create({
-      guestName: guestName ?? 'Гость',
-      guestEmail: guestEmail ?? null,
-      isAnonymous: true,
-    });
-    return this.conversationRepo.save(conv);
+    try {
+      const conv = this.conversationRepo.create({
+        guestName: guestName ?? 'Guest',
+        guestEmail: guestEmail ?? undefined,
+        isAnonymous: true,
+      });
+      return this.conversationRepo.save(conv);
+    } catch (error) {
+      console.error('Error creating guest conversation:', error);
+      throw new BadRequestException('Failed to create guest conversation');
+    }
   }
 
   async findConversationById(id: string): Promise<Conversation | null> {
