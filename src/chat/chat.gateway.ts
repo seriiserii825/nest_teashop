@@ -11,17 +11,18 @@ import {
 import { Server, Socket } from 'socket.io';
 import { ChatService } from './chat.service';
 
+interface JwtPayload {
+  id: string;
+  email: string;
+  name: string;
+}
+
 @WebSocketGateway({
   cors: {
     origin: process.env.FRONTEND_URL || 'http://localhost:3000',
     credentials: true,
   },
 })
-interface JwtPayload {
-  id: string;
-  email: string;
-  name: string;
-}
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
