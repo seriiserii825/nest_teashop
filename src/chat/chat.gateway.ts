@@ -9,17 +9,31 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { UserService } from 'src/user/user.service';
 import { ChatService } from './chat.service';
 
-interface JwtPayload {
-  id: string;
-  email: string;
+interface ChatUser {
+  id: number;
   name: string;
+  email: string;
 }
 
 @WebSocketGateway({
   cors: {
-    origin: process.env.CLIENT_URL || 'http://localhost:3000',
+    origin: (
+      origin: string,
+      callback: (err: Error | null, allow: boolean) => void,
+    ) => {
+      const allowed = [
+        process.env.CLIENT_URL,
+        process.env.CLIENT_URL_DEVELOPMENT,
+      ].filter(Boolean);
+      if (!origin || allowed.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS: origin ${origin} not allowed`), false);
+      }
+    },
     credentials: true,
   },
 })
@@ -27,13 +41,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
+  private connectedUsers = new Map<string, ChatUser>();
+
   constructor(
     private readonly chatService: ChatService,
     private readonly jwtService: JwtService,
+    private readonly userService: UserService,
   ) {}
 
-  // Определяем пользователя из токена
-  private getUserFromSocket(client: Socket): JwtPayload | null {
+  private getUserIdFromSocket(client: Socket): number | null {
     try {
       const token =
         client.handshake.auth?.token ||
@@ -41,35 +57,48 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       if (!token) return null;
 
-      const payload = this.jwtService.verify(token);
-      return payload; // { id, email, name, ... }
-    } catch {
+      const payload = this.jwtService.verify<{ id: number }>(token);
+      return payload.id ?? null;
+    } catch (e) {
+      console.error('[ChatGateway] JWT verify error:', e.message);
       return null;
     }
   }
 
-  // Клиент подключился
   async handleConnection(client: Socket) {
-    const user = this.getUserFromSocket(client);
-    console.log(`Connected: ${client.id} | ${user?.email ?? 'Аноним'}`);
+    const userId = this.getUserIdFromSocket(client);
 
-    // Отправляем историю сообщений только этому клиенту
+    if (userId) {
+      try {
+        const user = await this.userService.findOne(userId);
+        this.connectedUsers.set(client.id, {
+          id: user.id,
+          name: user.name ?? user.email,
+          email: user.email,
+        });
+        console.log(`Connected: ${client.id} | ${user.email}`);
+      } catch {
+        console.log(`Connected: ${client.id} | user ${userId} not found`);
+      }
+    } else {
+      console.log(`Connected: ${client.id} | Аноним`);
+    }
+
     const messages = await this.chatService.getMessages();
     client.emit('history', messages);
   }
 
-  // Клиент отключился
   handleDisconnect(client: Socket) {
+    this.connectedUsers.delete(client.id);
     console.log(`Disconnected: ${client.id}`);
   }
 
-  // Клиент отправил сообщение
   @SubscribeMessage('sendMessage')
   async handleMessage(
     @ConnectedSocket() client: Socket,
     @MessageBody() text: string,
   ) {
-    const user = this.getUserFromSocket(client);
+    const user = this.connectedUsers.get(client.id) ?? null;
 
     const message = await this.chatService.createMessage({
       text,
@@ -78,7 +107,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       isAnonymous: !user,
     });
 
-    // Отправляем сообщение всем подключённым клиентам
     this.server.emit('newMessage', message);
   }
 }
