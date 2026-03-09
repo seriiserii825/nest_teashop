@@ -15,6 +15,7 @@ import { StatisticModule } from './statistic/statistic.module';
 import { FileManagerModule } from './file-manager/file-manager.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { CartModule } from './cart/cart.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { CartModule } from './cart/cart.module';
     StatisticModule,
     FileManagerModule,
     CartModule,
+    ChatModule,
   ],
 })
 export class AppModule {}
