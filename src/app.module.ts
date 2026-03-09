@@ -16,6 +16,7 @@ import { FileManagerModule } from './file-manager/file-manager.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { CartModule } from './cart/cart.module';
 import { SupportChatModule } from './support-chat/support-chat.module';
+import { TelegramModule } from './telegram/telegram.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { SupportChatModule } from './support-chat/support-chat.module';
     FileManagerModule,
     CartModule,
     SupportChatModule,
+    TelegramModule,
   ],
 })
 export class AppModule {}
