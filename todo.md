@@ -1,2 +1,3 @@
 category
 product
+gpgrc
